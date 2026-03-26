@@ -4,16 +4,18 @@ import streamlit as st
 st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 
 # STOCK DISPONÍVEL
+st.sidebar.title("📦 Stock disponível")
+
 stock = {
-    "polymem": True,
-    "urgoclean": True,
-    "urgoclean_ag": True,
-    "mel": True,
-    "espuma": True,
-    "cronocol": True,
-    "aquacel": False,
-    "iodo": False,
-    "carvao": False
+    "polymem": st.sidebar.checkbox("Polymem", True),
+    "urgoclean": st.sidebar.checkbox("Urgoclean", True),
+    "urgoclean_ag": st.sidebar.checkbox("Urgoclean AG", True),
+    "mel": st.sidebar.checkbox("Mel (L-Mesitran / Actilite)", True),
+    "espuma": st.sidebar.checkbox("Espuma absorvente", True),
+    "cronocol": st.sidebar.checkbox("Cronocol", True),
+    "aquacel": st.sidebar.checkbox("Aquacel", False),
+    "iodo": st.sidebar.checkbox("Iodo", False),
+    "carvao": st.sidebar.checkbox("Carvão", False)
 }
 
 # UI
