@@ -39,7 +39,6 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         st.write("• Hidrogel / Flaminal Hydro")
 
     elif tecido == "fibrina":
-    
     st.markdown("### 🧽 Fibrina")
 
     # IDEAL
