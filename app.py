@@ -43,7 +43,6 @@ with st.sidebar.expander("🕳️ Cavidade"):
 
 # UI
 st.title("👣 Assistente Pé Diabético")
-
 st.markdown("### Dados da Ferida")
 
 tecido = st.selectbox("Tecido", ["necrose", "fibrina", "granulação"])
@@ -57,11 +56,13 @@ st.markdown("---")
 # BOTÃO
 if st.button("🧠 Gerar Plano de Tratamento"):
 
+    # ========================
+    # 🥇 PLANO PRINCIPAL
+    # ========================
     st.markdown("## 🥇 Plano Principal")
 
     plano_principal = []
 
-    # Fibrina
     if tecido == "fibrina":
         if urgoclean:
             plano_principal.append("Urgoclean")
@@ -70,128 +71,125 @@ if st.button("🧠 Gerar Plano de Tratamento"):
             if exsudado != "baixo":
                 plano_principal.append("Cortes no apósito")
 
-    # Granulação
     elif tecido == "granulação":
         if polymem:
             plano_principal.append("Polymem")
         elif mepilex:
             plano_principal.append("Mepilex")
 
-    # Necrose
     elif tecido == "necrose":
         plano_principal.append("Desbridamento")
 
-    # Infeção
     if infeccao == "sim":
         if exsudado != "baixo" and mepilex_ag:
             plano_principal.append("Mepilex AG")
         elif mel:
             plano_principal.append("Mel + espuma")
 
-    # Cavidade
     if cavidade and cronocol:
         plano_principal.append("Cronocol")
 
-    # Mostrar plano principal
     for item in plano_principal:
         st.write(f"• {item}")
 
     st.markdown("---")
+
+    # ========================
+    # 🩺 PLANO DETALHADO
+    # ========================
     st.markdown("## 🩺 Plano Detalhado")
 
-    # VASCULAR
     if vascular:
         st.markdown("### ⚠️ Vascular")
         st.write("• Evitar TPN")
 
-    # NECROSE
     if tecido == "necrose":
         st.markdown("### 🧬 Necrose")
         st.write("• Desbridamento (bisturi / cureta)")
         st.write("• Hidrogel / Flaminal Hydro")
 
-    # FIBRINA
     elif tecido == "fibrina":
         st.markdown("### 🧽 Fibrina")
+        st.write("• Urgoclean (preferido)")
+        st.write("• + gota de hidrogel")
 
-        st.markdown("⭐ Ideal:")
-        st.write("• Limpeza eficaz com mínimo trauma")
+        if exsudado != "baixo":
+            st.write("• Fazer cortes no apósito")
 
-        st.markdown("🟢 Com stock:")
+        if vascular:
+            st.warning("Evitar hidrogel isolado em doente vascular")
 
-        if urgoclean or urgoclean_ag:
-            if infeccao == "sim" and urgoclean_ag:
-                st.write("• Urgoclean AG")
-            else:
-                st.write("• Urgoclean (preferido)")
-
-            st.write("• + gota de hidrogel")
-
-            if exsudado != "baixo":
-                st.write("• Fazer cortes no apósito")
-
-        if not vascular:
-            st.write("• Hidrogel (se necessário)")
-        else:
-            st.warning("Evitar hidrogel isolado em compromisso vascular")
-
-    # GRANULAÇÃO
     elif tecido == "granulação":
         st.markdown("### 🌱 Granulação")
-
-        st.markdown("⭐ Ideal:")
-        st.write("• Proteção + ambiente húmido")
-
-        st.markdown("🟢 Com stock:")
 
         if polymem:
             st.write("• Polymem (preferido)")
         elif mepilex:
             st.write("• Mepilex")
         else:
-            st.write("• Espuma absorvente")
+            st.write("• Espuma")
 
-    # INFEÇÃO
     if infeccao == "sim":
         st.markdown("### 🦠 Infeção")
-
-        st.markdown("⭐ Ideal:")
-        st.write("• Antimicrobiano eficaz sem comprometer cicatrização")
-
-        st.markdown("🟢 Com stock (prioridade clínica):")
 
         if exsudado != "baixo" and mepilex_ag:
             st.write("• Mepilex AG (preferido)")
 
         if mel:
-            st.write("• Mel + espuma absorvente")
+            st.write("• Mel + espuma")
 
         if urgoclean_ag:
             st.write("• Urgoclean AG")
 
         if iodosorb or inadine:
-            st.write("• Iodo (alternativa)")
-            st.warning("Pode encerrar superficialmente → vigiar cavidade")
+            st.write("• Iodo")
+            st.warning("Risco de encerramento superficial precoce")
 
         if silverderma:
             st.write("• Silverderma (última linha)")
 
-    # CAVIDADE
     if cavidade:
         st.markdown("### 🕳️ Cavidade")
 
         if cronocol:
             st.write("• Cronocol")
+
         if mel:
             st.write("• Mel tulle")
 
-    # TPN
     if not vascular and exsudado == "alto":
-        st.markdown("### ⚙️ Terapia de Pressão Negativa")
-        st.write("• Considerar TPN")
-        st.write("• Pressão: 100 mmHg")
+        st.markdown("### ⚙️ TPN")
+        st.write("• Considerar TPN a 100 mmHg")
 
-    # DESCARGA
+    st.markdown("---")
+
+    # ========================
+    # ⚠️ ALERTAS CLÍNICOS
+    # ========================
+    st.markdown("## ⚠️ Alertas Clínicos")
+
+    alertas = []
+
+    if exsudado == "alto" and not (mepilex or polymem or aquacel):
+        alertas.append("Exsudado alto sem absorção adequada → risco de maceração")
+
+    if tecido == "fibrina" and vascular:
+        alertas.append("Evitar hidrogel isolado em doente vascular")
+
+    if infeccao == "sim" and cavidade and (iodosorb or inadine):
+        alertas.append("Iodo pode causar encerramento superficial precoce")
+
+    if infeccao == "sim" and exsudado == "baixo":
+        alertas.append("Evitar prata sem exsudado significativo")
+
+    alertas.append("Confirmar descarga adequada")
+
+    for alerta in alertas:
+        st.warning(alerta)
+
+    # ========================
+    # 👣 DESCARGA
+    # ========================
     st.markdown("---")
     st.markdown("### 👣 Descarga (ESSENCIAL)")
     st.write("• Calçado tipo Baruk")
