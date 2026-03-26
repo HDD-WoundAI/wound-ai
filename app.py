@@ -1,45 +1,57 @@
 import streamlit as st
 
-st.title("Assistente Pé Diabético 👣")
+st.set_page_config(page_title="Pé Diabético", layout="centered")
 
-st.header("Dados da Ferida")
+st.title("👣 Assistente Pé Diabético")
 
-tecido = st.selectbox("Tipo de tecido", ["necrose", "fibrina", "granulação"])
+st.markdown("### Dados da Ferida")
+
+tecido = st.selectbox("Tecido", ["necrose", "fibrina", "granulação"])
 exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
 infeccao = st.selectbox("Infeção", ["não", "sim"])
 cavidade = st.checkbox("Cavidade")
 vascular = st.checkbox("Compromisso vascular")
 
-st.header("Plano")
+st.markdown("---")
 
-if st.button("Gerar Plano"):
+if st.button("🧠 Gerar Plano de Tratamento"):
     
-    st.subheader("Recomendação:")
+    st.markdown("## 🩺 Plano Sugerido")
 
     if vascular:
-        st.write("❌ Evitar TPN")
+        st.error("Evitar TPN por compromisso vascular")
 
     if tecido == "necrose":
-        st.write("➡️ Desbridamento (bisturi/cureta)")
-        st.write("➡️ Hidrogel ou Flaminal Hydro")
+        st.warning("Necrose presente → realizar desbridamento")
+        st.write("• Bisturi / cureta")
+        st.write("• Hidrogel / Flaminal Hydro")
 
     elif tecido == "fibrina":
-        st.write("➡️ Urgoclean")
-        st.write("💡 Adicionar gota de hidrogel")
+        st.success("Fibrina → limpeza ativa")
+        st.write("• Urgoclean")
+        st.write("• + gota de hidrogel (potencia ação)")
         
         if exsudado != "baixo":
-            st.write("✂️ Fazer cortes no apósito para drenagem")
+            st.write("• Fazer cortes no apósito para drenagem")
 
     elif tecido == "granulação":
-        st.write("➡️ Espuma ou Polymem")
+        st.info("Granulação → proteger tecido")
+        st.write("• Espuma absorvente")
+        st.write("• Polymem")
 
     if infeccao == "sim":
-        st.write("🦠 Considerar mel ou prata")
+        st.error("Infeção → adicionar antimicrobiano")
+        st.write("• Mel ou prata")
 
     if cavidade:
-        st.write("🕳️ Cronocol ou mel tulle")
+        st.warning("Cavidade presente")
+        st.write("• Cronocol ou mel tulle")
 
     if not vascular and exsudado == "alto":
-        st.write("⚙️ Considerar TPN a 100 mmHg")
+        st.success("Elegível para TPN")
+        st.write("• Pressão recomendada: 100 mmHg")
 
-    st.write("👣 Implementar descarga (Baruk/feltro)")
+    st.markdown("---")
+    st.markdown("### 👣 Descarga (ESSENCIAL)")
+    st.write("• Calçado tipo Baruk")
+    st.write("• Feltro com abertura na zona da ferida")
