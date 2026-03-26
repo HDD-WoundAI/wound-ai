@@ -2,68 +2,49 @@ import streamlit as st
 from PIL import Image
 import base64
 import io
+import json
+from datetime import datetime
 from openai import OpenAI
 
+# ========================
 # CONFIG
+# ========================
 st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 
-# OPENAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ========================
-# SESSION STATE
+# STORAGE
 # ========================
-if "ia_resultado" not in st.session_state:
-    st.session_state.ia_resultado = None
+DATA_FILE = "casos.json"
 
-if "tecido_detectado" not in st.session_state:
-    st.session_state.tecido_detectado = None
+def guardar_caso(caso):
+    try:
+        with open(DATA_FILE, "r") as f:
+            dados = json.load(f)
+    except:
+        dados = []
 
-if "exsudado_detectado" not in st.session_state:
-    st.session_state.exsudado_detectado = None
+    dados.append(caso)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(dados, f)
 
 # ========================
-# 📦 SIDEBAR STOCK COMPLETO
+# SESSION
 # ========================
-st.sidebar.title("📦 Stock disponível")
-
-with st.sidebar.expander("🧼 Limpeza"):
-    prontosan = st.checkbox("Prontosan", True)
-    granudacyn = st.checkbox("Granudacyn", True)
-    betadine = st.checkbox("Betadine solução", True)
-
-with st.sidebar.expander("🧽 Desbridamento / Fibrina"):
-    urgoclean = st.checkbox("Urgoclean", True)
-    urgoclean_ag = st.checkbox("Urgoclean AG", True)
-    flaminal = st.checkbox("Flaminal Hydro", True)
-    askina = st.checkbox("Askina gel", True)
-    ulcerase = st.checkbox("Ulcerase", True)
-
-with st.sidebar.expander("🍯 Antimicrobianos / Mel / Iodo"):
-    mel = st.checkbox("Mel (L-Mesitran / Actilite)", True)
-    inadine = st.checkbox("Inadine", False)
-    iodosorb = st.checkbox("Iodosorb", False)
-    silverderma = st.checkbox("Silverderma", True)
-    nadiclox = st.checkbox("Nadiclox (fusidato)", True)
-
-with st.sidebar.expander("🧸 Espumas / Absorção"):
-    polymem = st.checkbox("Polymem", True)
-    mepilex = st.checkbox("Mepilex", True)
-    mepilex_ag = st.checkbox("Mepilex AG", True)
-    aquacel = st.checkbox("Aquacel", False)
-    aquacel_ag = st.checkbox("Aquacel AG", False)
-
-with st.sidebar.expander("🕳️ Cavidade"):
-    cronocol = st.checkbox("Cronocol", True)
-    tulle_mel = st.checkbox("Tulle com mel", True)
+if "ia_output" not in st.session_state:
+    st.session_state.ia_output = None
 
 # ========================
 # UI
 # ========================
 st.title("👣 Assistente Pé Diabético")
 
+nome = st.text_input("Nome / ID do doente")
+
 # ========================
-# 📸 IMAGEM + IA
+# 📸 IMAGEM
 # ========================
 imagem = st.file_uploader("Carregar imagem", type=["jpg", "png", "jpeg"])
 
@@ -77,151 +58,123 @@ if imagem:
 
     st.image(img, use_column_width=True)
 
-    if st.button("🔍 Analisar com IA"):
+# ========================
+# 🧠 IA AUTOMÁTICA
+# ========================
+if st.button("🧠 Análise automática") and imagem:
 
-        base64_image = base64.b64encode(bytes_data).decode("utf-8")
+    base64_image = base64.b64encode(bytes_data).decode("utf-8")
 
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Identifica tecido (necrose, fibrina, granulação) e exsudado (baixo, moderado, alto)."},
-                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
-                        ],
-                    }
-                ],
-            )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """
+Analisa esta ferida de pé diabético.
 
-            resultado = response.choices[0].message.content.lower()
-            st.session_state.ia_resultado = resultado
+Indica:
+- tecido predominante
+- exsudado
+- infeção provável
 
-            if "necrose" in resultado:
-                st.session_state.tecido_detectado = "necrose"
-            elif "fibrina" in resultado:
-                st.session_state.tecido_detectado = "fibrina"
-            elif "granulação" in resultado:
-                st.session_state.tecido_detectado = "granulação"
+E sugere plano com materiais reais (ex: Urgoclean, Polymem, Mepilex AG, TPN).
 
-            if "alto" in resultado:
-                st.session_state.exsudado_detectado = "alto"
-            elif "moderado" in resultado:
-                st.session_state.exsudado_detectado = "moderado"
-            elif "baixo" in resultado:
-                st.session_state.exsudado_detectado = "baixo"
+Resposta curta e clínica.
+"""
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
+                        },
+                    ],
+                }
+            ],
+        )
 
-            st.success(resultado)
+        st.session_state.ia_output = response.choices[0].message.content
 
-        except:
-            st.warning("IA indisponível")
+    except:
+        st.warning("IA indisponível")
 
 # ========================
-# INPUTS
+# RESULTADO IA
 # ========================
-st.markdown("## 🧠 Dados Clínicos")
-
-tecido_opcoes = ["não determinado", "necrose", "fibrina", "granulação"]
-tecido = st.selectbox("Tecido predominante", tecido_opcoes)
-
-exsudado_opcoes = ["não determinado", "baixo", "moderado", "alto"]
-exsudado = st.selectbox("Exsudado", exsudado_opcoes)
-
-infeccao = st.selectbox("Infeção", ["não", "sim", "não determinado"])
-cavidade = st.checkbox("Cavidade")
+if st.session_state.ia_output:
+    st.markdown("## 🤖 Plano automático")
+    st.write(st.session_state.ia_output)
 
 # ========================
-# VASCULAR + IPTB
+# 🔧 AJUSTE MANUAL
 # ========================
-st.markdown("## 🩸 Compromisso Vascular")
+st.markdown("## 🔧 Ajustes manuais (opcional)")
 
-vascular = st.checkbox("Compromisso vascular conhecido")
+override = st.checkbox("Adicionar informação manual")
 
-iptb = None
+plano_manual = []
 
-if not vascular:
-    pulsos = st.selectbox("Pulsos", ["não determinado", "sim", "não"])
-    braquial = st.number_input("Pressão braquial")
-    tibial = st.number_input("Pressão tibial")
+if override:
+    infeccao = st.selectbox("Infeção", ["não", "sim"])
+    exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
+    cavidade = st.checkbox("Cavidade")
+    vascular = st.checkbox("Compromisso vascular")
 
-    if braquial > 0 and tibial > 0:
-        iptb = tibial / braquial
+    if st.button("🔄 Recalcular plano"):
 
-    if iptb:
-        if iptb > 1.4:
-            st.info(f"🔵 IPTB {iptb:.2f} → Calcificação")
-        elif 0.9 <= iptb <= 1.3:
-            st.success(f"🟢 IPTB {iptb:.2f} → Normal")
-        elif 0.7 <= iptb < 0.9:
-            st.warning(f"🟡 IPTB {iptb:.2f} → Obstrução ligeira")
-        elif 0.4 <= iptb < 0.7:
-            st.warning(f"🟠 IPTB {iptb:.2f} → Obstrução moderada")
-        else:
-            st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
+        if exsudado == "alto" and not vascular:
+            plano_manual.append("TPN (100 mmHg)")
+
+        if infeccao == "sim":
+            plano_manual.append("Mepilex AG ou Mel")
+
+        if cavidade:
+            plano_manual.append("Cronocol")
+
+        st.markdown("## 🔁 Plano ajustado")
+        for p in plano_manual:
+            st.write(f"• {p}")
 
 # ========================
-# DECISÃO FINAL
+# 💾 GUARDAR CASO
 # ========================
-st.markdown("---")
+if st.button("💾 Guardar caso"):
 
-if st.button("🧠 Gerar Plano"):
+    caso = {
+        "nome": nome,
+        "data": str(datetime.now()),
+        "plano": st.session_state.ia_output,
+    }
 
-    st.markdown("## 🥇 Plano")
+    guardar_caso(caso)
 
-    plano = []
+    st.success("Caso guardado com sucesso")
 
-    # FIBRINA
-    if tecido == "fibrina":
-        if urgoclean:
-            plano.append("Urgoclean + hidrogel")
-        elif mel:
-            plano.append("Mel")
+# ========================
+# 📊 SCORE DE RISCO
+# ========================
+st.markdown("## 📊 Score de risco")
 
-    # NECROSE
-    if tecido == "necrose":
-        plano.append("Desbridamento")
+score = 0
 
-    # GRANULAÇÃO
-    if tecido == "granulação":
-        if polymem:
-            plano.append("Polymem")
-        else:
-            plano.append("Espuma")
-
-    # INFEÇÃO
+if override:
     if infeccao == "sim":
-        if mepilex_ag:
-            plano.append("Mepilex AG")
-        elif mel:
-            plano.append("Mel")
-
-    # CAVIDADE
-    if cavidade:
-        if cronocol:
-            plano.append("Cronocol")
-        elif tulle_mel:
-            plano.append("Tulle com mel")
-
-    # TPN
-    if exsudado == "alto" and not vascular and tecido != "necrose":
-        plano.append("TPN (100 mmHg)")
-
-    for p in plano:
-        st.write(f"• {p}")
-
-    # ALERTAS
-    st.markdown("## ⚠️ Alertas")
-
-    if iptb and iptb < 0.5:
-        st.error("Isquemia crítica")
-
+        score += 2
     if exsudado == "alto":
-        st.warning("Risco de maceração")
+        score += 2
+    if cavidade:
+        score += 1
+    if vascular:
+        score += 2
 
-    st.warning("Confirmar descarga")
-
-    # DESCARGA
-    st.markdown("## 👣 Descarga")
-    st.write("• Baruk")
-    st.write("• Feltro de descarga")
+if score >= 5:
+    st.error("🔴 Alto risco")
+elif score >= 3:
+    st.warning("🟠 Risco moderado")
+else:
+    st.success("🟢 Baixo risco")
