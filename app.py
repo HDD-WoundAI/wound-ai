@@ -3,20 +3,43 @@ import streamlit as st
 # CONFIG
 st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 
-# STOCK DISPONÍVEL
+# SIDEBAR STOCK
 st.sidebar.title("📦 Stock disponível")
 
-stock = {
-    "polymem": st.sidebar.checkbox("Polymem", True),
-    "urgoclean": st.sidebar.checkbox("Urgoclean", True),
-    "urgoclean_ag": st.sidebar.checkbox("Urgoclean AG", True),
-    "mel": st.sidebar.checkbox("Mel (L-Mesitran / Actilite)", True),
-    "espuma": st.sidebar.checkbox("Espuma absorvente", True),
-    "cronocol": st.sidebar.checkbox("Cronocol", True),
-    "aquacel": st.sidebar.checkbox("Aquacel", False),
-    "iodo": st.sidebar.checkbox("Iodo", False),
-    "carvao": st.sidebar.checkbox("Carvão", False)
-}
+# ESPUMAS
+with st.sidebar.expander("🧸 Espumas"):
+    polymem = st.checkbox("Polymem", True)
+    mepilex = st.checkbox("Mepilex", True)
+    mepilex_ag = st.checkbox("Mepilex AG", True)
+
+# LIMPEZA
+with st.sidebar.expander("🧼 Limpeza"):
+    prontosan = st.checkbox("Prontosan", True)
+    granudacyn = st.checkbox("Granudacyn", True)
+    betadine = st.checkbox("Betadine", True)
+
+# DESBRIDAMENTO
+with st.sidebar.expander("🧽 Desbridamento"):
+    urgoclean = st.checkbox("Urgoclean", True)
+    urgoclean_ag = st.checkbox("Urgoclean AG", True)
+    ulcerase = st.checkbox("Ulcerase", True)
+    flaminal_hydro = st.checkbox("Flaminal Hydro", True)
+
+# ANTIMICROBIANOS
+with st.sidebar.expander("🦠 Antimicrobianos"):
+    mel = st.checkbox("Mel (L-Mesitran / Actilite)", True)
+    inadine = st.checkbox("Inadine", False)
+    iodosorb = st.checkbox("Iodosorb", False)
+    silverderma = st.checkbox("Silverderma", True)
+
+# ABSORÇÃO
+with st.sidebar.expander("💧 Absorção"):
+    aquacel = st.checkbox("Aquacel", False)
+    aquacel_ag = st.checkbox("Aquacel AG", False)
+
+# CAVIDADE
+with st.sidebar.expander("🕳️ Cavidade"):
+    cronocol = st.checkbox("Cronocol", True)
 
 # UI
 st.title("👣 Assistente Pé Diabético")
@@ -41,40 +64,41 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         st.markdown("### ⚠️ Vascular")
         st.write("• Evitar TPN")
 
-    # TECIDO
+    # NECROSE
     if tecido == "necrose":
         st.markdown("### 🧬 Necrose")
         st.write("• Desbridamento (bisturi / cureta)")
         st.write("• Hidrogel / Flaminal Hydro")
 
+    # FIBRINA
     elif tecido == "fibrina":
         st.markdown("### 🧽 Fibrina")
 
         st.markdown("⭐ Ideal:")
         st.write("• Urgoclean sem prata")
 
-        st.markdown("🟢 Com stock disponível:")
+        st.markdown("🟢 Com stock:")
 
-        if stock["urgoclean"]:
-            if infeccao == "sim" and stock["urgoclean_ag"]:
+        if urgoclean or urgoclean_ag:
+            if infeccao == "sim" and urgoclean_ag:
                 st.write("• Urgoclean AG")
-            else:
+            elif urgoclean:
                 st.write("• Urgoclean")
 
             st.write("• + gota de hidrogel")
 
             if exsudado != "baixo":
-                st.write("• Fazer cortes no apósito para drenagem")
+                st.write("• Fazer cortes no apósito")
 
         else:
-            st.write("• Urgoclean indisponível")
-
             st.markdown("🔁 Alternativa:")
-            if stock["mel"]:
-                st.write("• Mel (L-Mesitran / Actilite)")
-            else:
-                st.write("• Espuma absorvente")
 
+            if mel:
+                st.write("• Mel")
+            elif mepilex:
+                st.write("• Espuma")
+
+    # GRANULAÇÃO
     elif tecido == "granulação":
         st.markdown("### 🌱 Granulação")
 
@@ -83,10 +107,10 @@ if st.button("🧠 Gerar Plano de Tratamento"):
 
         st.markdown("🟢 Com stock:")
 
-        if stock["polymem"]:
+        if polymem:
             st.write("• Polymem (preferido)")
-        elif stock["espuma"]:
-            st.write("• Espuma absorvente")
+        elif mepilex:
+            st.write("• Mepilex")
         else:
             st.write("• Proteção simples")
 
@@ -99,12 +123,12 @@ if st.button("🧠 Gerar Plano de Tratamento"):
 
         st.markdown("🟢 Com stock:")
 
-        if stock["mel"]:
+        if mel:
             st.write("• Mel (preferido)")
-        elif stock["urgoclean_ag"]:
+        elif urgoclean_ag:
             st.write("• Urgoclean AG")
-        else:
-            st.write("• Outro antimicrobiano")
+        elif silverderma:
+            st.write("• Silverderma")
 
         st.markdown("⚠️ Nota:")
         st.write("• Evitar uso prolongado de prata")
@@ -112,9 +136,10 @@ if st.button("🧠 Gerar Plano de Tratamento"):
     # CAVIDADE
     if cavidade:
         st.markdown("### 🕳️ Cavidade")
-        if stock["cronocol"]:
+
+        if cronocol:
             st.write("• Cronocol")
-        if stock["mel"]:
+        if mel:
             st.write("• Mel tulle")
 
     # TPN
