@@ -1,8 +1,13 @@
 import streamlit as st
 from PIL import Image
+import base64
+from openai import OpenAI
 
 # CONFIG
 st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
+
+# OPENAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # SIDEBAR STOCK
 st.sidebar.title("📦 Stock disponível")
@@ -28,29 +33,57 @@ with st.sidebar.expander("🕳️ Cavidade"):
 # UI
 st.title("👣 Assistente Pé Diabético")
 
-# 📸 UPLOAD DE IMAGEM
+# ========================
+# 📸 IMAGEM + IA
+# ========================
 st.markdown("## 📸 Upload de Imagem")
 
-imagem = st.file_uploader("Carregar imagem da ferida", type=["jpg", "png", "jpeg"])
+imagem = st.file_uploader("Carregar imagem", type=["jpg", "png", "jpeg"])
+
+tecido_detectado = None
 
 if imagem:
-    img = Image.open(imagem)
-    st.image(img, caption="Imagem carregada", use_column_width=True)
+    st.image(imagem, caption="Imagem carregada", use_column_width=True)
 
-    st.markdown("### 🔍 Sugestão baseada na imagem (assistida)")
+    if st.button("🔍 Analisar com IA"):
 
-    sugestao = st.selectbox(
-        "O que predomina na imagem?",
-        ["Selecionar", "Necrose", "Fibrina", "Granulação"]
-    )
+        bytes_data = imagem.read()
+        base64_image = base64.b64encode(bytes_data).decode("utf-8")
 
-    if sugestao != "Selecionar":
-        st.success(f"Sugestão inicial: {sugestao}")
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Classifica esta ferida de pé diabético em: necrose, fibrina ou granulação. Responde só com uma palavra."},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
+                        },
+                    ],
+                }
+            ],
+        )
 
+        tecido_detectado = response.choices[0].message.content.strip().lower()
+
+        st.success(f"IA sugere: {tecido_detectado}")
+
+# ========================
 # INPUTS
+# ========================
 st.markdown("## 🧠 Dados Clínicos")
 
-tecido = st.selectbox("Tecido", ["necrose", "fibrina", "granulação"])
+opcoes_tecido = ["necrose", "fibrina", "granulação"]
+
+if tecido_detectado in opcoes_tecido:
+    tecido = st.selectbox("Tecido", opcoes_tecido, index=opcoes_tecido.index(tecido_detectado))
+else:
+    tecido = st.selectbox("Tecido", opcoes_tecido)
+
 exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
 infeccao = st.selectbox("Infeção", ["não", "sim"])
 cavidade = st.checkbox("Cavidade")
@@ -58,9 +91,12 @@ vascular = st.checkbox("Compromisso vascular")
 
 st.markdown("---")
 
+# ========================
 # BOTÃO
+# ========================
 if st.button("🧠 Gerar Plano"):
 
+    # 🥇 PLANO PRINCIPAL
     st.markdown("## 🥇 Plano Principal")
 
     plano = []
@@ -69,19 +105,23 @@ if st.button("🧠 Gerar Plano"):
         if urgoclean:
             plano.append("Urgoclean")
             plano.append("+ gota de hidrogel")
+            if exsudado != "baixo":
+                plano.append("Cortes no apósito")
 
     elif tecido == "granulação":
         if polymem:
             plano.append("Polymem")
+        elif mepilex:
+            plano.append("Mepilex")
 
     elif tecido == "necrose":
         plano.append("Desbridamento")
 
     if infeccao == "sim":
-        if mepilex_ag:
+        if exsudado != "baixo" and mepilex_ag:
             plano.append("Mepilex AG")
         elif mel:
-            plano.append("Mel")
+            plano.append("Mel + espuma")
 
     if cavidade and cronocol:
         plano.append("Cronocol")
@@ -91,15 +131,28 @@ if st.button("🧠 Gerar Plano"):
 
     st.markdown("---")
 
-    st.markdown("## ⚠️ Alertas")
+    # 🩺 DETALHADO
+    st.markdown("## 🩺 Plano Detalhado")
 
-    if vascular and tecido == "fibrina":
+    if vascular:
         st.warning("Evitar hidrogel isolado")
 
-    if infeccao == "sim" and cavidade:
-        st.warning("Vigiar encerramento precoce")
+    if infeccao == "sim" and cavidade and (iodosorb or inadine):
+        st.warning("Risco de encerramento superficial precoce")
 
     st.markdown("---")
+
+    # ⚠️ ALERTAS
+    st.markdown("## ⚠️ Alertas")
+
+    if exsudado == "alto" and not (mepilex or polymem):
+        st.warning("Risco de maceração")
+
+    st.warning("Confirmar descarga adequada")
+
+    st.markdown("---")
+
+    # 👣 DESCARGA
     st.markdown("## 👣 Descarga")
     st.write("• Calçado tipo Baruk")
     st.write("• Feltro de descarga")
