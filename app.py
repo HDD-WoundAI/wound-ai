@@ -256,7 +256,7 @@ if st.button("🧠 Gerar Plano"):
             elif mel:
                 plano.append("Mel")
 
-        if fistula: and cronocol:
+        if fistula and cronocol:
             plano.append("Cronocol")
 
         if urgoclean:
