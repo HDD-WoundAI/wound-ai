@@ -1,4 +1,16 @@
 import streamlit as st
+# STOCK DISPONÍVEL
+stock = {
+    "polymem": True,
+    "urgoclean": True,
+    "urgoclean_ag": True,
+    "mel": True,
+    "espuma": True,
+    "cronocol": True,
+    "aquacel": False,  # evitado / sem preferência
+    "iodo": False,
+    "carvao": False
+}
 
 st.set_page_config(page_title="Pé Diabético", layout="centered")
 
@@ -26,23 +38,72 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         st.write("• Bisturi / cureta")
         st.write("• Hidrogel / Flaminal Hydro")
 
-    elif tecido == "fibrina":
-        st.success("Fibrina → limpeza ativa")
-        st.write("• Urgoclean")
-        st.write("• + gota de hidrogel (potencia ação)")
-        
+  elif tecido == "fibrina":
+    
+    st.markdown("### 🧽 Fibrina")
+
+    # IDEAL
+    st.markdown("⭐ Ideal:")
+    st.write("• Urgoclean sem prata")
+
+    # STOCK
+    st.markdown("🟢 Com stock disponível:")
+
+    if stock["urgoclean"]:
+        if infeccao == "sim" and stock["urgoclean_ag"]:
+            st.write("• Urgoclean AG")
+        else:
+            st.write("• Urgoclean")
+
+        st.write("• + gota de hidrogel")
+
         if exsudado != "baixo":
             st.write("• Fazer cortes no apósito para drenagem")
 
+    else:
+        st.warning("Urgoclean não disponível")
+
+        # ALTERNATIVA
+        st.markdown("🔁 Alternativa:")
+        if stock["mel"]:
+            st.write("• Mel (L-Mesitran / Actilite)")
+        else:
+            st.write("• Espuma absorvente")
+
     elif tecido == "granulação":
-        st.info("Granulação → proteger tecido")
+    
+    st.markdown("### 🌱 Granulação")
+
+    st.markdown("⭐ Ideal:")
+    st.write("• Espuma com silicone")
+
+    st.markdown("🟢 Com stock:")
+
+    if stock["polymem"]:
+        st.write("• Polymem (preferido)")
+    elif stock["espuma"]:
         st.write("• Espuma absorvente")
-        st.write("• Polymem")
+    else:
+        st.write("• Proteção simples (tulle)")
 
     if infeccao == "sim":
-        st.error("Infeção → adicionar antimicrobiano")
-        st.write("• Mel ou prata")
+    
+    st.markdown("### 🦠 Infeção")
 
+    st.markdown("⭐ Ideal:")
+    st.write("• Prata direcionada (curto período)")
+
+    st.markdown("🟢 Com stock:")
+
+    if stock["mel"]:
+        st.write("• Mel (preferido)")
+    elif stock["urgoclean_ag"]:
+        st.write("• Urgoclean AG")
+    else:
+        st.write("• Considerar outro antimicrobiano")
+
+    st.markdown("⚠️ Nota:")
+    st.write("• Evitar uso prolongado de prata")
     if cavidade:
         st.warning("Cavidade presente")
         st.write("• Cronocol ou mel tulle")
