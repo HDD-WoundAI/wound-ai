@@ -1,4 +1,8 @@
 import streamlit as st
+
+# CONFIG
+st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
+
 # STOCK DISPONÍVEL
 stock = {
     "polymem": True,
@@ -7,13 +11,12 @@ stock = {
     "mel": True,
     "espuma": True,
     "cronocol": True,
-    "aquacel": False,  # evitado / sem preferência
+    "aquacel": False,
     "iodo": False,
     "carvao": False
 }
 
-st.set_page_config(page_title="Pé Diabético", layout="centered")
-
+# UI
 st.title("👣 Assistente Pé Diabético")
 
 st.markdown("### Dados da Ferida")
@@ -26,91 +29,99 @@ vascular = st.checkbox("Compromisso vascular")
 
 st.markdown("---")
 
+# BOTÃO
 if st.button("🧠 Gerar Plano de Tratamento"):
-    
+
     st.markdown("## 🩺 Plano Sugerido")
 
+    # VASCULAR
     if vascular:
-        st.error("Evitar TPN por compromisso vascular")
+        st.markdown("### ⚠️ Vascular")
+        st.write("• Evitar TPN")
 
+    # TECIDO
     if tecido == "necrose":
-        st.warning("Necrose presente → realizar desbridamento")
-        st.write("• Bisturi / cureta")
+        st.markdown("### 🧬 Necrose")
+        st.write("• Desbridamento (bisturi / cureta)")
         st.write("• Hidrogel / Flaminal Hydro")
 
     elif tecido == "fibrina":
-    st.markdown("### 🧽 Fibrina")
+        st.markdown("### 🧽 Fibrina")
 
-    # IDEAL
-    st.markdown("⭐ Ideal:")
-    st.write("• Urgoclean sem prata")
+        st.markdown("⭐ Ideal:")
+        st.write("• Urgoclean sem prata")
 
-    # STOCK
-    st.markdown("🟢 Com stock disponível:")
+        st.markdown("🟢 Com stock disponível:")
 
-    if stock["urgoclean"]:
-        if infeccao == "sim" and stock["urgoclean_ag"]:
-            st.write("• Urgoclean AG")
+        if stock["urgoclean"]:
+            if infeccao == "sim" and stock["urgoclean_ag"]:
+                st.write("• Urgoclean AG")
+            else:
+                st.write("• Urgoclean")
+
+            st.write("• + gota de hidrogel")
+
+            if exsudado != "baixo":
+                st.write("• Fazer cortes no apósito para drenagem")
+
         else:
-            st.write("• Urgoclean")
+            st.write("• Urgoclean indisponível")
 
-        st.write("• + gota de hidrogel")
-
-        if exsudado != "baixo":
-            st.write("• Fazer cortes no apósito para drenagem")
-
-    else:
-        st.warning("Urgoclean não disponível")
-
-        # ALTERNATIVA
-        st.markdown("🔁 Alternativa:")
-        if stock["mel"]:
-            st.write("• Mel (L-Mesitran / Actilite)")
-        else:
-            st.write("• Espuma absorvente")
+            st.markdown("🔁 Alternativa:")
+            if stock["mel"]:
+                st.write("• Mel (L-Mesitran / Actilite)")
+            else:
+                st.write("• Espuma absorvente")
 
     elif tecido == "granulação":
-    
-    st.markdown("### 🌱 Granulação")
+        st.markdown("### 🌱 Granulação")
 
-    st.markdown("⭐ Ideal:")
-    st.write("• Espuma com silicone")
+        st.markdown("⭐ Ideal:")
+        st.write("• Espuma com silicone")
 
-    st.markdown("🟢 Com stock:")
+        st.markdown("🟢 Com stock:")
 
-    if stock["polymem"]:
-        st.write("• Polymem (preferido)")
-    elif stock["espuma"]:
-        st.write("• Espuma absorvente")
-    else:
-        st.write("• Proteção simples (tulle)")
+        if stock["polymem"]:
+            st.write("• Polymem (preferido)")
+        elif stock["espuma"]:
+            st.write("• Espuma absorvente")
+        else:
+            st.write("• Proteção simples")
 
+    # INFEÇÃO
     if infeccao == "sim":
-    
-    st.markdown("### 🦠 Infeção")
+        st.markdown("### 🦠 Infeção")
 
-    st.markdown("⭐ Ideal:")
-    st.write("• Prata direcionada (curto período)")
+        st.markdown("⭐ Ideal:")
+        st.write("• Prata direcionada (curto período)")
 
-    st.markdown("🟢 Com stock:")
+        st.markdown("🟢 Com stock:")
 
-    if stock["mel"]:
-        st.write("• Mel (preferido)")
-    elif stock["urgoclean_ag"]:
-        st.write("• Urgoclean AG")
-    else:
-        st.write("• Considerar outro antimicrobiano")
+        if stock["mel"]:
+            st.write("• Mel (preferido)")
+        elif stock["urgoclean_ag"]:
+            st.write("• Urgoclean AG")
+        else:
+            st.write("• Outro antimicrobiano")
 
-    st.markdown("⚠️ Nota:")
-    st.write("• Evitar uso prolongado de prata")
+        st.markdown("⚠️ Nota:")
+        st.write("• Evitar uso prolongado de prata")
+
+    # CAVIDADE
     if cavidade:
-        st.warning("Cavidade presente")
-        st.write("• Cronocol ou mel tulle")
+        st.markdown("### 🕳️ Cavidade")
+        if stock["cronocol"]:
+            st.write("• Cronocol")
+        if stock["mel"]:
+            st.write("• Mel tulle")
 
+    # TPN
     if not vascular and exsudado == "alto":
-        st.success("Elegível para TPN")
-        st.write("• Pressão recomendada: 100 mmHg")
+        st.markdown("### ⚙️ Terapia de Pressão Negativa")
+        st.write("• Considerar TPN")
+        st.write("• Pressão: 100 mmHg")
 
+    # DESCARGA
     st.markdown("---")
     st.markdown("### 👣 Descarga (ESSENCIAL)")
     st.write("• Calçado tipo Baruk")
