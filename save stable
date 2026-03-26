@@ -144,32 +144,97 @@ if override:
     infeccao = st.selectbox("Infeção", ["não", "sim"])
     exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
     cavidade = st.checkbox("Cavidade")
+    # ========================
+# 🧠 NEUROPATIA
+# ========================
+st.markdown("## 🧠 Neuropatia (opcional)")
+
+avaliar_neuropatia = st.checkbox("Avaliar neuropatia")
+
+if avaliar_neuropatia:
+
+    st.markdown("### Sensibilidades")
+
+    with st.expander("Ver detalhes das sensibilidades"):
+
+        tactil = st.checkbox("Táctil (presente)")
+        vibratoria = st.checkbox("Vibratória (presente)")
+        dolorosa = st.checkbox("Dolorosa (presente)")
+        termica = st.checkbox("Térmica (presente)")
+
+    # Interpretação automática
+    alteracoes = []
+
+    if not tactil:
+        alteracoes.append("↓ táctil")
+    if not vibratoria:
+        alteracoes.append("↓ vibratória")
+    if not dolorosa:
+        alteracoes.append("↓ dolorosa")
+    if not termica:
+        alteracoes.append("↓ térmica")
+
+    # Output clínico
+    if alteracoes:
+        st.warning("Neuropatia provável: " + ", ".join(alteracoes))
+    else:
+        st.success("Sensibilidades preservadas")
     vascular = st.checkbox("Compromisso vascular")
 
     # ========================
-    # IPTB (REINTRODUZIDO)
+# 🩸 COMPROMISSO VASCULAR + IPTB
+# ========================
+st.markdown("## 🩸 Compromisso Vascular")
+
+vascular = st.checkbox("Compromisso vascular conhecido")
+
+iptb = None
+
+if not vascular:
+
+    st.markdown("### 📊 Avaliação vascular")
+
+    pulsos = st.selectbox(
+        "Pulsos",
+        ["não determinado", "presentes", "ausentes"]
+    )
+
+    # 👉 INPUT DIRETO (RECUPERADO)
+    iptb_direto = st.number_input("IPTB (valor direto, se disponível)", value=0.0)
+
+    st.markdown("### Ou calcular IPTB")
+
+    braquial = st.number_input("Pressão braquial")
+    tibial = st.number_input("Pressão tibial")
+
+    # PRIORIDADE: cálculo > direto
+    if braquial > 0 and tibial > 0:
+        iptb = tibial / braquial
+
+    elif iptb_direto > 0:
+        iptb = iptb_direto
+
     # ========================
-    iptb = None
+    # 🎨 IPTB COM CORES
+    # ========================
+    if iptb:
 
-    if not vascular:
-        st.markdown("### 📊 IPTB")
+        st.markdown("### 📊 Resultado IPTB")
 
-        braquial = st.number_input("Pressão braquial")
-        tibial = st.number_input("Pressão tibial")
+        if iptb > 1.4:
+            st.info(f"🔵 IPTB {iptb:.2f} → Calcificação arterial / vasos não compressíveis")
 
-        if braquial > 0 and tibial > 0:
-            iptb = tibial / braquial
+        elif 0.9 <= iptb <= 1.3:
+            st.success(f"🟢 IPTB {iptb:.2f} → Normal")
 
-            if iptb > 1.4:
-                st.info(f"🔵 IPTB {iptb:.2f} → Calcificação")
-            elif 0.9 <= iptb <= 1.3:
-                st.success(f"🟢 IPTB {iptb:.2f} → Normal")
-            elif 0.7 <= iptb < 0.9:
-                st.warning(f"🟡 IPTB {iptb:.2f} → Ligeira")
-            elif 0.4 <= iptb < 0.7:
-                st.warning(f"🟠 IPTB {iptb:.2f} → Moderada")
-            else:
-                st.error(f"🔴 IPTB {iptb:.2f} → Grave")
+        elif 0.7 <= iptb < 0.9:
+            st.warning(f"🟡 IPTB {iptb:.2f} → Obstrução ligeira")
+
+        elif 0.4 <= iptb < 0.7:
+            st.warning(f"🟠 IPTB {iptb:.2f} → Obstrução moderada")
+
+        elif iptb < 0.4:
+            st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
 
 # ========================
 # DECISÃO
