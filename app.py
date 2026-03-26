@@ -42,13 +42,13 @@ st.markdown("## 📸 Upload de Imagem")
 imagem = st.file_uploader("Carregar imagem", type=["jpg", "png", "jpeg"])
 
 tecido_detectado = None
+plano_ia = None
 
 if imagem:
     img = Image.open(imagem)
 
-    # 🔻 COMPRESSÃO (IMPORTANTE)
+    # 🔻 COMPRESSÃO
     img.thumbnail((800, 800))
-
     buffer = io.BytesIO()
     img.save(buffer, format="JPEG", quality=70)
     bytes_data = buffer.getvalue()
@@ -68,7 +68,18 @@ if imagem:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "Analisa esta ferida de pé diabético. Diz o tipo predominante (necrose, fibrina ou granulação) e se há mistura de tecidos. Responde de forma curta."
+                                "text": """
+Analisa esta ferida de pé diabético.
+
+Identifica:
+- tecidos presentes (necrose, fibrina, granulação)
+- qual o predominante
+
+Sugere:
+- plano inicial de tratamento (tipo de abordagem)
+
+Resposta curta e clínica.
+"""
                             },
                             {
                                 "type": "image_url",
@@ -81,18 +92,20 @@ if imagem:
                 ],
             )
 
-            resultado = response.choices[0].message.content.strip().lower()
-            st.success(f"IA sugere: {resultado}")
+            resultado = response.choices[0].message.content.strip()
+            plano_ia = resultado.lower()
 
-            if "necrose" in resultado:
+            st.success(resultado)
+
+            if "necrose" in plano_ia:
                 tecido_detectado = "necrose"
-            elif "fibrina" in resultado:
+            elif "fibrina" in plano_ia:
                 tecido_detectado = "fibrina"
-            elif "granulação" in resultado:
+            elif "granulação" in plano_ia:
                 tecido_detectado = "granulação"
 
         except Exception:
-            st.warning("IA indisponível (verificar créditos/API)")
+            st.warning("IA indisponível")
 
 # ========================
 # INPUTS
@@ -114,9 +127,14 @@ vascular = st.checkbox("Compromisso vascular")
 st.markdown("---")
 
 # ========================
-# BOTÃO PRINCIPAL
+# BOTÃO
 # ========================
 if st.button("🧠 Gerar Plano"):
+
+    # 🥇 PLANO IA (se existir)
+    if plano_ia:
+        st.markdown("## 🤖 Sugestão da IA")
+        st.write(plano_ia)
 
     # 🥇 PLANO PRINCIPAL
     st.markdown("## 🥇 Plano Principal")
@@ -153,22 +171,17 @@ if st.button("🧠 Gerar Plano"):
 
     st.markdown("---")
 
-    # 🩺 DETALHADO
-    st.markdown("## 🩺 Plano Detalhado")
-
-    if vascular and tecido == "fibrina":
-        st.warning("Evitar hidrogel isolado")
-
-    if infeccao == "sim" and cavidade and (iodosorb or inadine):
-        st.warning("Risco de encerramento superficial precoce")
-
-    st.markdown("---")
-
     # ⚠️ ALERTAS
     st.markdown("## ⚠️ Alertas")
 
     if exsudado == "alto" and not (mepilex or polymem):
         st.warning("Risco de maceração")
+
+    if tecido == "fibrina" and vascular:
+        st.warning("Evitar hidrogel isolado")
+
+    if infeccao == "sim" and cavidade and (iodosorb or inadine):
+        st.warning("Risco de encerramento superficial precoce")
 
     st.warning("Confirmar descarga adequada")
 
