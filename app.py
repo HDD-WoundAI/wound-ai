@@ -60,7 +60,7 @@ with st.sidebar.expander("🧸 Espumas"):
     mepilex = st.checkbox("Mepilex", True)
     mepilex_ag = st.checkbox("Mepilex AG", True)
 
-with st.sidebar.expander("🕳️ Cavidade"):
+with st.sidebar.expander("🕳️ Material cavitário"):
     cronocol = st.checkbox("Cronocol", True)
 
 # ========================
