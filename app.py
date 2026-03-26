@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import base64
+import io
 from openai import OpenAI
 
 # CONFIG
@@ -43,34 +44,55 @@ imagem = st.file_uploader("Carregar imagem", type=["jpg", "png", "jpeg"])
 tecido_detectado = None
 
 if imagem:
-    st.image(imagem, caption="Imagem carregada", use_column_width=True)
+    img = Image.open(imagem)
+
+    # 🔻 COMPRESSÃO (IMPORTANTE)
+    img.thumbnail((800, 800))
+
+    buffer = io.BytesIO()
+    img.save(buffer, format="JPEG", quality=70)
+    bytes_data = buffer.getvalue()
+
+    st.image(img, caption="Imagem carregada", use_column_width=True)
 
     if st.button("🔍 Analisar com IA"):
 
-        bytes_data = imagem.read()
         base64_image = base64.b64encode(bytes_data).decode("utf-8")
 
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "Classifica esta ferida de pé diabético em: necrose, fibrina ou granulação. Responde só com uma palavra."},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}"
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Analisa esta ferida de pé diabético. Diz o tipo predominante (necrose, fibrina ou granulação) e se há mistura de tecidos. Responde de forma curta."
                             },
-                        },
-                    ],
-                }
-            ],
-        )
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{base64_image}"
+                                },
+                            },
+                        ],
+                    }
+                ],
+            )
 
-        tecido_detectado = response.choices[0].message.content.strip().lower()
+            resultado = response.choices[0].message.content.strip().lower()
+            st.success(f"IA sugere: {resultado}")
 
-        st.success(f"IA sugere: {tecido_detectado}")
+            if "necrose" in resultado:
+                tecido_detectado = "necrose"
+            elif "fibrina" in resultado:
+                tecido_detectado = "fibrina"
+            elif "granulação" in resultado:
+                tecido_detectado = "granulação"
+
+        except Exception:
+            st.warning("IA indisponível (verificar créditos/API)")
 
 # ========================
 # INPUTS
@@ -92,7 +114,7 @@ vascular = st.checkbox("Compromisso vascular")
 st.markdown("---")
 
 # ========================
-# BOTÃO
+# BOTÃO PRINCIPAL
 # ========================
 if st.button("🧠 Gerar Plano"):
 
@@ -134,7 +156,7 @@ if st.button("🧠 Gerar Plano"):
     # 🩺 DETALHADO
     st.markdown("## 🩺 Plano Detalhado")
 
-    if vascular:
+    if vascular and tecido == "fibrina":
         st.warning("Evitar hidrogel isolado")
 
     if infeccao == "sim" and cavidade and (iodosorb or inadine):
