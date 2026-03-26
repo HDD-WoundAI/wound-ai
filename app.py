@@ -57,7 +57,47 @@ st.markdown("---")
 # BOTÃO
 if st.button("🧠 Gerar Plano de Tratamento"):
 
-    st.markdown("## 🩺 Plano Sugerido")
+    st.markdown("## 🥇 Plano Principal")
+
+    plano_principal = []
+
+    # Fibrina
+    if tecido == "fibrina":
+        if urgoclean:
+            plano_principal.append("Urgoclean")
+            plano_principal.append("+ gota de hidrogel")
+
+            if exsudado != "baixo":
+                plano_principal.append("Cortes no apósito")
+
+    # Granulação
+    elif tecido == "granulação":
+        if polymem:
+            plano_principal.append("Polymem")
+        elif mepilex:
+            plano_principal.append("Mepilex")
+
+    # Necrose
+    elif tecido == "necrose":
+        plano_principal.append("Desbridamento")
+
+    # Infeção
+    if infeccao == "sim":
+        if exsudado != "baixo" and mepilex_ag:
+            plano_principal.append("Mepilex AG")
+        elif mel:
+            plano_principal.append("Mel + espuma")
+
+    # Cavidade
+    if cavidade and cronocol:
+        plano_principal.append("Cronocol")
+
+    # Mostrar plano principal
+    for item in plano_principal:
+        st.write(f"• {item}")
+
+    st.markdown("---")
+    st.markdown("## 🩺 Plano Detalhado")
 
     # VASCULAR
     if vascular:
@@ -95,9 +135,6 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         else:
             st.warning("Evitar hidrogel isolado em compromisso vascular")
 
-        st.markdown("💡 Nota:")
-        st.write("• Urgoclean menos agressivo em doente vascular")
-
     # GRANULAÇÃO
     elif tecido == "granulação":
         st.markdown("### 🌱 Granulação")
@@ -113,9 +150,6 @@ if st.button("🧠 Gerar Plano de Tratamento"):
             st.write("• Mepilex")
         else:
             st.write("• Espuma absorvente")
-
-        st.markdown("💡 Nota:")
-        st.write("• Evitar trauma no leito")
 
     # INFEÇÃO
     if infeccao == "sim":
@@ -141,9 +175,6 @@ if st.button("🧠 Gerar Plano de Tratamento"):
 
         if silverderma:
             st.write("• Silverderma (última linha)")
-
-        st.markdown("⚠️ Nota:")
-        st.write("• Evitar uso prolongado de prata")
 
     # CAVIDADE
     if cavidade:
