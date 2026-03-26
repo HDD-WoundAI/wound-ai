@@ -143,7 +143,7 @@ override = st.checkbox("Adicionar dados clínicos")
 if override:
     infeccao = st.selectbox("Infeção", ["não", "sim"])
     exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
-    cavidade = st.checkbox("Cavidade")
+    fistula = st.checkbox("Fístula")
     # ========================
 # 🧠 NEUROPATIA
 # ========================
@@ -256,7 +256,7 @@ if st.button("🧠 Gerar Plano"):
             elif mel:
                 plano.append("Mel")
 
-        if cavidade and cronocol:
+        if fistula: and cronocol:
             plano.append("Cronocol")
 
         if urgoclean:
