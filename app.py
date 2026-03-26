@@ -141,6 +141,13 @@ st.markdown("## 🔧 Ajustes manuais")
 override = st.checkbox("Adicionar dados clínicos")
 
 if override:
+    # ========================
+# 🧫 TECIDO PREDOMINANTE
+# ========================
+tecido = st.selectbox(
+    "Tecido predominante",
+    ["não determinado", "necrose", "fibrina", "granulação"]
+)
     infeccao = st.selectbox("Infeção", ["não", "sim"])
     exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
     fistula = st.checkbox("Fístula")
