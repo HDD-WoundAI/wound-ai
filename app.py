@@ -144,15 +144,26 @@ if override:
 
     tecido = st.selectbox(
         "Tecido predominante",
-        ["não determinado", "necrose", "fibrina", "granulação"]
+        ["não determinado", "necrose", "fibrina", "granulação"],
+        key="tecido"
     )
 
-    infeccao = st.selectbox("Infeção", ["não", "sim"])
-    exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
-    fistula = st.checkbox("Fístula")
-    infeccao = st.selectbox("Infeção", ["não", "sim"])
-    exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
-    fistula = st.checkbox("Fístula")
+    infeccao = st.selectbox(
+        "Infeção",
+        ["não", "sim"],
+        key="infeccao"
+    )
+
+    exsudado = st.selectbox(
+        "Exsudado",
+        ["baixo", "moderado", "alto"],
+        key="exsudado"
+    )
+
+    fistula = st.checkbox(
+        "Fístula",
+        key="fistula"
+    )
     # ========================
 # 🧠 NEUROPATIA
 # ========================
