@@ -10,7 +10,9 @@ st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 # OPENAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# ========================
 # SESSION STATE
+# ========================
 if "ia_resultado" not in st.session_state:
     st.session_state.ia_resultado = None
 
@@ -21,10 +23,48 @@ if "exsudado_detectado" not in st.session_state:
     st.session_state.exsudado_detectado = None
 
 # ========================
-# 📸 IMAGEM
+# 📦 SIDEBAR STOCK COMPLETO
+# ========================
+st.sidebar.title("📦 Stock disponível")
+
+with st.sidebar.expander("🧼 Limpeza"):
+    prontosan = st.checkbox("Prontosan", True)
+    granudacyn = st.checkbox("Granudacyn", True)
+    betadine = st.checkbox("Betadine solução", True)
+
+with st.sidebar.expander("🧽 Desbridamento / Fibrina"):
+    urgoclean = st.checkbox("Urgoclean", True)
+    urgoclean_ag = st.checkbox("Urgoclean AG", True)
+    flaminal = st.checkbox("Flaminal Hydro", True)
+    askina = st.checkbox("Askina gel", True)
+    ulcerase = st.checkbox("Ulcerase", True)
+
+with st.sidebar.expander("🍯 Antimicrobianos / Mel / Iodo"):
+    mel = st.checkbox("Mel (L-Mesitran / Actilite)", True)
+    inadine = st.checkbox("Inadine", False)
+    iodosorb = st.checkbox("Iodosorb", False)
+    silverderma = st.checkbox("Silverderma", True)
+    nadiclox = st.checkbox("Nadiclox (fusidato)", True)
+
+with st.sidebar.expander("🧸 Espumas / Absorção"):
+    polymem = st.checkbox("Polymem", True)
+    mepilex = st.checkbox("Mepilex", True)
+    mepilex_ag = st.checkbox("Mepilex AG", True)
+    aquacel = st.checkbox("Aquacel", False)
+    aquacel_ag = st.checkbox("Aquacel AG", False)
+
+with st.sidebar.expander("🕳️ Cavidade"):
+    cronocol = st.checkbox("Cronocol", True)
+    tulle_mel = st.checkbox("Tulle com mel", True)
+
+# ========================
+# UI
 # ========================
 st.title("👣 Assistente Pé Diabético")
 
+# ========================
+# 📸 IMAGEM + IA
+# ========================
 imagem = st.file_uploader("Carregar imagem", type=["jpg", "png", "jpeg"])
 
 if imagem:
@@ -41,72 +81,58 @@ if imagem:
 
         base64_image = base64.b64encode(bytes_data).decode("utf-8")
 
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Identifica tecido (necrose, fibrina, granulação) e exsudado (baixo, moderado, alto)."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
-                        },
-                    ],
-                }
-            ],
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Identifica tecido (necrose, fibrina, granulação) e exsudado (baixo, moderado, alto)."},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                        ],
+                    }
+                ],
+            )
 
-        resultado = response.choices[0].message.content.lower()
-        st.session_state.ia_resultado = resultado
+            resultado = response.choices[0].message.content.lower()
+            st.session_state.ia_resultado = resultado
 
-        if "necrose" in resultado:
-            st.session_state.tecido_detectado = "necrose"
-        elif "fibrina" in resultado:
-            st.session_state.tecido_detectado = "fibrina"
-        elif "granulação" in resultado:
-            st.session_state.tecido_detectado = "granulação"
+            if "necrose" in resultado:
+                st.session_state.tecido_detectado = "necrose"
+            elif "fibrina" in resultado:
+                st.session_state.tecido_detectado = "fibrina"
+            elif "granulação" in resultado:
+                st.session_state.tecido_detectado = "granulação"
 
-        if "alto" in resultado:
-            st.session_state.exsudado_detectado = "alto"
-        elif "moderado" in resultado:
-            st.session_state.exsudado_detectado = "moderado"
-        elif "baixo" in resultado:
-            st.session_state.exsudado_detectado = "baixo"
+            if "alto" in resultado:
+                st.session_state.exsudado_detectado = "alto"
+            elif "moderado" in resultado:
+                st.session_state.exsudado_detectado = "moderado"
+            elif "baixo" in resultado:
+                st.session_state.exsudado_detectado = "baixo"
 
-        st.success(resultado)
+            st.success(resultado)
+
+        except:
+            st.warning("IA indisponível")
 
 # ========================
-# 🧠 INPUTS
+# INPUTS
 # ========================
 st.markdown("## 🧠 Dados Clínicos")
 
 tecido_opcoes = ["não determinado", "necrose", "fibrina", "granulação"]
-
-tecido = st.selectbox(
-    "Tecido predominante",
-    tecido_opcoes,
-    index=tecido_opcoes.index(st.session_state.tecido_detectado)
-    if st.session_state.tecido_detectado in tecido_opcoes else 0
-)
+tecido = st.selectbox("Tecido predominante", tecido_opcoes)
 
 exsudado_opcoes = ["não determinado", "baixo", "moderado", "alto"]
-
-exsudado = st.selectbox(
-    "Exsudado",
-    exsudado_opcoes,
-    index=exsudado_opcoes.index(st.session_state.exsudado_detectado)
-    if st.session_state.exsudado_detectado in exsudado_opcoes else 0
-)
+exsudado = st.selectbox("Exsudado", exsudado_opcoes)
 
 infeccao = st.selectbox("Infeção", ["não", "sim", "não determinado"])
 cavidade = st.checkbox("Cavidade")
 
 # ========================
-# 🩸 VASCULAR + IPTB
+# VASCULAR + IPTB
 # ========================
 st.markdown("## 🩸 Compromisso Vascular")
 
@@ -116,71 +142,68 @@ iptb = None
 
 if not vascular:
     pulsos = st.selectbox("Pulsos", ["não determinado", "sim", "não"])
-
-    iptb_direto = st.number_input("IPTB direto", value=0.0)
-
-    st.markdown("### Ou calcular IPTB")
-
     braquial = st.number_input("Pressão braquial")
     tibial = st.number_input("Pressão tibial")
 
     if braquial > 0 and tibial > 0:
         iptb = tibial / braquial
 
-    elif iptb_direto > 0:
-        iptb = iptb_direto
-
-    # ========================
-    # IPTB COLORIDO
-    # ========================
     if iptb:
-        st.markdown("### 📊 IPTB")
-
         if iptb > 1.4:
-            st.markdown(f"<div style='background-color:#4da6ff;padding:10px;border-radius:8px'>🔵 IPTB: {iptb:.2f} → Calcificação arterial / vasos não compressíveis</div>", unsafe_allow_html=True)
-
+            st.info(f"🔵 IPTB {iptb:.2f} → Calcificação")
         elif 0.9 <= iptb <= 1.3:
-            st.markdown(f"<div style='background-color:#70db70;padding:10px;border-radius:8px'>🟢 IPTB: {iptb:.2f} → Normal</div>", unsafe_allow_html=True)
-
+            st.success(f"🟢 IPTB {iptb:.2f} → Normal")
         elif 0.7 <= iptb < 0.9:
-            st.markdown(f"<div style='background-color:#ffff66;padding:10px;border-radius:8px'>🟡 IPTB: {iptb:.2f} → Obstrução ligeira</div>", unsafe_allow_html=True)
-
+            st.warning(f"🟡 IPTB {iptb:.2f} → Obstrução ligeira")
         elif 0.4 <= iptb < 0.7:
-            st.markdown(f"<div style='background-color:#ff9933;padding:10px;border-radius:8px'>🟠 IPTB: {iptb:.2f} → Obstrução moderada</div>", unsafe_allow_html=True)
-
-        elif iptb < 0.4:
-            st.markdown(f"<div style='background-color:#ff4d4d;padding:10px;border-radius:8px'>🔴 IPTB: {iptb:.2f} → Isquemia grave</div>", unsafe_allow_html=True)
+            st.warning(f"🟠 IPTB {iptb:.2f} → Obstrução moderada")
+        else:
+            st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
 
 # ========================
-# DECISÃO
+# DECISÃO FINAL
 # ========================
 st.markdown("---")
 
 if st.button("🧠 Gerar Plano"):
 
-    if st.session_state.ia_resultado:
-        st.markdown("## 🤖 IA")
-        st.write(st.session_state.ia_resultado)
-
     st.markdown("## 🥇 Plano")
 
     plano = []
 
+    # FIBRINA
     if tecido == "fibrina":
-        plano.append("Urgoclean + hidrogel")
+        if urgoclean:
+            plano.append("Urgoclean + hidrogel")
+        elif mel:
+            plano.append("Mel")
 
-    elif tecido == "necrose":
+    # NECROSE
+    if tecido == "necrose":
         plano.append("Desbridamento")
 
-    elif tecido == "granulação":
-        plano.append("Polymem ou Mepilex")
+    # GRANULAÇÃO
+    if tecido == "granulação":
+        if polymem:
+            plano.append("Polymem")
+        else:
+            plano.append("Espuma")
 
+    # INFEÇÃO
     if infeccao == "sim":
-        plano.append("Mepilex AG ou Mel")
+        if mepilex_ag:
+            plano.append("Mepilex AG")
+        elif mel:
+            plano.append("Mel")
 
+    # CAVIDADE
     if cavidade:
-        plano.append("Cronocol")
+        if cronocol:
+            plano.append("Cronocol")
+        elif tulle_mel:
+            plano.append("Tulle com mel")
 
+    # TPN
     if exsudado == "alto" and not vascular and tecido != "necrose":
         plano.append("TPN (100 mmHg)")
 
@@ -190,15 +213,8 @@ if st.button("🧠 Gerar Plano"):
     # ALERTAS
     st.markdown("## ⚠️ Alertas")
 
-    if vascular:
-        st.warning("Compromisso vascular")
-
-    if iptb:
-        if iptb < 0.5:
-            st.error("Isquemia crítica → referenciar vascular")
-
-        if iptb > 1.4:
-            st.warning("Calcificação arterial")
+    if iptb and iptb < 0.5:
+        st.error("Isquemia crítica")
 
     if exsudado == "alto":
         st.warning("Risco de maceração")
@@ -207,5 +223,5 @@ if st.button("🧠 Gerar Plano"):
 
     # DESCARGA
     st.markdown("## 👣 Descarga")
-    st.write("• Calçado tipo Baruk")
+    st.write("• Baruk")
     st.write("• Feltro de descarga")
