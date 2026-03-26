@@ -144,6 +144,41 @@ if override:
     infeccao = st.selectbox("Infeção", ["não", "sim"])
     exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
     cavidade = st.checkbox("Cavidade")
+    # ========================
+# 🧠 NEUROPATIA
+# ========================
+st.markdown("## 🧠 Neuropatia (opcional)")
+
+avaliar_neuropatia = st.checkbox("Avaliar neuropatia")
+
+if avaliar_neuropatia:
+
+    st.markdown("### Sensibilidades")
+
+    with st.expander("Ver detalhes das sensibilidades"):
+
+        tactil = st.checkbox("Táctil (presente)")
+        vibratoria = st.checkbox("Vibratória (presente)")
+        dolorosa = st.checkbox("Dolorosa (presente)")
+        termica = st.checkbox("Térmica (presente)")
+
+    # Interpretação automática
+    alteracoes = []
+
+    if not tactil:
+        alteracoes.append("↓ táctil")
+    if not vibratoria:
+        alteracoes.append("↓ vibratória")
+    if not dolorosa:
+        alteracoes.append("↓ dolorosa")
+    if not termica:
+        alteracoes.append("↓ térmica")
+
+    # Output clínico
+    if alteracoes:
+        st.warning("Neuropatia provável: " + ", ".join(alteracoes))
+    else:
+        st.success("Sensibilidades preservadas")
     vascular = st.checkbox("Compromisso vascular")
 
     # ========================
