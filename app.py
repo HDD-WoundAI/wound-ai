@@ -75,35 +75,35 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         st.markdown("### 🧽 Fibrina")
 
         st.markdown("⭐ Ideal:")
-        st.write("• Urgoclean sem prata")
+        st.write("• Limpeza eficaz com mínimo trauma")
 
         st.markdown("🟢 Com stock:")
 
         if urgoclean or urgoclean_ag:
             if infeccao == "sim" and urgoclean_ag:
                 st.write("• Urgoclean AG")
-            elif urgoclean:
-                st.write("• Urgoclean")
+            else:
+                st.write("• Urgoclean (preferido)")
 
             st.write("• + gota de hidrogel")
 
             if exsudado != "baixo":
                 st.write("• Fazer cortes no apósito")
 
+        if not vascular:
+            st.write("• Hidrogel (se necessário)")
         else:
-            st.markdown("🔁 Alternativa:")
+            st.warning("Evitar hidrogel isolado em compromisso vascular")
 
-            if mel:
-                st.write("• Mel")
-            elif mepilex:
-                st.write("• Espuma")
+        st.markdown("💡 Nota:")
+        st.write("• Urgoclean menos agressivo em doente vascular")
 
     # GRANULAÇÃO
     elif tecido == "granulação":
         st.markdown("### 🌱 Granulação")
 
         st.markdown("⭐ Ideal:")
-        st.write("• Espuma com silicone")
+        st.write("• Proteção + ambiente húmido")
 
         st.markdown("🟢 Com stock:")
 
@@ -112,23 +112,35 @@ if st.button("🧠 Gerar Plano de Tratamento"):
         elif mepilex:
             st.write("• Mepilex")
         else:
-            st.write("• Proteção simples")
+            st.write("• Espuma absorvente")
+
+        st.markdown("💡 Nota:")
+        st.write("• Evitar trauma no leito")
 
     # INFEÇÃO
     if infeccao == "sim":
         st.markdown("### 🦠 Infeção")
 
         st.markdown("⭐ Ideal:")
-        st.write("• Prata direcionada (curto período)")
+        st.write("• Antimicrobiano eficaz sem comprometer cicatrização")
 
-        st.markdown("🟢 Com stock:")
+        st.markdown("🟢 Com stock (prioridade clínica):")
+
+        if exsudado != "baixo" and mepilex_ag:
+            st.write("• Mepilex AG (preferido)")
 
         if mel:
-            st.write("• Mel (preferido)")
-        elif urgoclean_ag:
+            st.write("• Mel + espuma absorvente")
+
+        if urgoclean_ag:
             st.write("• Urgoclean AG")
-        elif silverderma:
-            st.write("• Silverderma")
+
+        if iodosorb or inadine:
+            st.write("• Iodo (alternativa)")
+            st.warning("Pode encerrar superficialmente → vigiar cavidade")
+
+        if silverderma:
+            st.write("• Silverderma (última linha)")
 
         st.markdown("⚠️ Nota:")
         st.write("• Evitar uso prolongado de prata")
