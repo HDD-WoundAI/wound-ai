@@ -56,34 +56,123 @@ if "stock" not in st.session_state:
     }
 
 # ========================
-# 📦 SIDEBAR (CORRIGIDO)
+# 📦 SIDEBAR (COM STATE)
 # ========================
 st.sidebar.title("📦 Stock disponível")
 
 with st.sidebar.expander("🧼 Limpeza"):
-    prontosan = st.checkbox("Prontosan", True)
-    granudacyn = st.checkbox("Granudacyn", True)
-    betadine = st.checkbox("Betadine", True)
+    prontosan = st.checkbox(
+        "Prontosan",
+        value=st.session_state.stock["prontosan"],
+        key="prontosan_checkbox"
+    )
+    st.session_state.stock["prontosan"] = prontosan
+
+    granudacyn = st.checkbox(
+        "Granudacyn",
+        value=st.session_state.stock["granudacyn"],
+        key="granudacyn_checkbox"
+    )
+    st.session_state.stock["granudacyn"] = granudacyn
+
+    betadine = st.checkbox(
+        "Betadine",
+        value=st.session_state.stock["betadine"],
+        key="betadine_checkbox"
+    )
+    st.session_state.stock["betadine"] = betadine
+
 
 with st.sidebar.expander("🧽 Desbridamento"):
-    urgoclean = st.checkbox("Urgoclean", True)
-    urgoclean_ag = st.checkbox("Urgoclean AG", True)
-    flaminal = st.checkbox("Flaminal", True)
-    ulcerase = st.checkbox("Ulcerase", True)
+    urgoclean = st.checkbox(
+        "Urgoclean",
+        value=st.session_state.stock["urgoclean"],
+        key="urgoclean_checkbox"
+    )
+    st.session_state.stock["urgoclean"] = urgoclean
+
+    urgoclean_ag = st.checkbox(
+        "Urgoclean AG",
+        value=st.session_state.stock["urgoclean_ag"],
+        key="urgoclean_ag_checkbox"
+    )
+    st.session_state.stock["urgoclean_ag"] = urgoclean_ag
+
+    flaminal = st.checkbox(
+        "Flaminal",
+        value=st.session_state.stock["flaminal"],
+        key="flaminal_checkbox"
+    )
+    st.session_state.stock["flaminal"] = flaminal
+
+    ulcerase = st.checkbox(
+        "Ulcerase",
+        value=st.session_state.stock["ulcerase"],
+        key="ulcerase_checkbox"
+    )
+    st.session_state.stock["ulcerase"] = ulcerase
+
 
 with st.sidebar.expander("🦠 Antimicrobianos"):
-    mel = st.checkbox("Mel", True)
-    inadine = st.checkbox("Inadine", False)
-    iodosorb = st.checkbox("Iodosorb", False)
-    silverderma = st.checkbox("Silverderma", True)
+    mel = st.checkbox(
+        "Mel",
+        value=st.session_state.stock["mel"],
+        key="mel_checkbox"
+    )
+    st.session_state.stock["mel"] = mel
+
+    inadine = st.checkbox(
+        "Inadine",
+        value=st.session_state.stock["inadine"],
+        key="inadine_checkbox"
+    )
+    st.session_state.stock["inadine"] = inadine
+
+    iodosorb = st.checkbox(
+        "Iodosorb",
+        value=st.session_state.stock["iodosorb"],
+        key="iodosorb_checkbox"
+    )
+    st.session_state.stock["iodosorb"] = iodosorb
+
+    silverderma = st.checkbox(
+        "Silverderma",
+        value=st.session_state.stock["silverderma"],
+        key="silverderma_checkbox"
+    )
+    st.session_state.stock["silverderma"] = silverderma
+
 
 with st.sidebar.expander("🧸 Espumas"):
-    polymem = st.checkbox("Polymem", True)
-    mepilex = st.checkbox("Mepilex", True)
-    mepilex_ag = st.checkbox("Mepilex AG", True)
+    polymem = st.checkbox(
+        "Polymem",
+        value=st.session_state.stock["polymem"],
+        key="polymem_checkbox"
+    )
+    st.session_state.stock["polymem"] = polymem
+
+    mepilex = st.checkbox(
+        "Mepilex",
+        value=st.session_state.stock["mepilex"],
+        key="mepilex_checkbox"
+    )
+    st.session_state.stock["mepilex"] = mepilex
+
+    mepilex_ag = st.checkbox(
+        "Mepilex AG",
+        value=st.session_state.stock["mepilex_ag"],
+        key="mepilex_ag_checkbox"
+    )
+    st.session_state.stock["mepilex_ag"] = mepilex_ag
+
 
 with st.sidebar.expander("🕳️ Material cavitário"):
-    cronocol = st.checkbox("Cronocol", True)
+    cronocol = st.checkbox(
+        "Cronocol",
+        value=st.session_state.stock["cronocol"],
+        key="cronocol_checkbox"
+    )
+    st.session_state.stock["cronocol"] = cronocol
 
 # ========================
 # UI
