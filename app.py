@@ -230,26 +230,35 @@ if st.sidebar.button("Aplicar perfil"):
     st.rerun()
 
 
-# 👇 AQUI ENTRA O GUARDAR PERFIL
+# 👇 GUARDAR / ATUALIZAR PERFIS (COM PERSISTÊNCIA)
 st.sidebar.markdown("### 💾 Guardar perfil")
 
 novo_nome = st.sidebar.text_input("Nome do novo perfil")
 
+# 💾 GUARDAR NOVO PERFIL
 if st.sidebar.button("Guardar perfil atual"):
-    if novo_nome:
+    if not novo_nome:
+        st.warning("Dá um nome ao perfil")
+    elif novo_nome in st.session_state.stock_profiles:
+        st.warning("Já existe um perfil com esse nome — usa 'Atualizar'")
+    else:
         st.session_state.stock_profiles[novo_nome] = {
             k: st.session_state[k] for k in stock_keys
         }
+        save_profiles(st.session_state.stock_profiles)
         st.success(f"Perfil '{novo_nome}' guardado")
-    else:
-        st.warning("Dá um nome ao perfil")
 
+
+# ✏️ ATUALIZAR PERFIL EXISTENTE
 if st.sidebar.button("Atualizar perfil selecionado"):
-    st.session_state.stock_profiles[perfil] = {
-        k: st.session_state[k] for k in stock_keys
-    }
-    st.success(f"Perfil '{perfil}' atualizado")
-
+    if perfil not in st.session_state.stock_profiles:
+        st.warning("Perfil inválido")
+    else:
+        st.session_state.stock_profiles[perfil] = {
+            k: st.session_state[k] for k in stock_keys
+        }
+        save_profiles(st.session_state.stock_profiles)
+        st.success(f"Perfil '{perfil}' atualizado")
 
 # ========================
 # ⚙️ GESTÃO DE STOCK (SEGURO)
