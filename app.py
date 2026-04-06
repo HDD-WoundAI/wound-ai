@@ -180,10 +180,11 @@ st.sidebar.markdown("### ⚙️ Gestão de stock")
 
 if st.sidebar.button("🔄 Reset stock"):
     st.session_state.stock = {k: True for k in st.session_state.stock}
+    st.rerun()
 
 if st.sidebar.button("🚫 Limpar stock"):
     st.session_state.stock = {k: False for k in st.session_state.stock}
-
+    st.rerun()
 # ========================
 # UI
 # ========================
