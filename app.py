@@ -72,6 +72,31 @@ stock_keys = [
 ]
 
 # ========================
+# 📦 PERFIS DE STOCK
+# ========================
+stock_profiles = {
+    "ULS (Completo)": {k: True for k in stock_keys},
+
+    "HDD (Diabetes)": {
+        "prontosan": True,
+        "granudacyn": True,
+        "betadine": True,
+        "urgoclean": True,
+        "urgoclean_ag": False,
+        "flaminal": True,
+        "ulcerase": False,
+        "mel": True,
+        "inadine": True,
+        "iodosorb": False,
+        "silverderma": True,
+        "polymem": True,
+        "mepilex": True,
+        "mepilex_ag": True,
+        "cronocol": True
+    }
+}
+
+# ========================
 # INICIALIZAR STATE
 # ========================
 for k in stock_keys:
@@ -79,7 +104,21 @@ for k in stock_keys:
         st.session_state[k] = True
 
 # ========================
-# APLICAR RESET/LIMPAR (ANTES DOS WIDGETS)
+# APLICAR PERFIL
+# ========================
+if st.session_state.get("apply_profile"):
+    perfil_nome = st.session_state["apply_profile"]
+    perfil_data = stock_profiles[perfil_nome]
+
+    for k in stock_keys:
+        st.session_state[k] = perfil_data.get(k, False)
+
+    st.session_state["apply_profile"] = None
+    st.rerun()
+
+
+# ========================
+# APLICAR RESET
 # ========================
 if st.session_state.get("reset_stock"):
     for k in stock_keys:
@@ -87,12 +126,15 @@ if st.session_state.get("reset_stock"):
     st.session_state["reset_stock"] = False
     st.rerun()
 
+
+# ========================
+# APLICAR LIMPAR
+# ========================
 if st.session_state.get("clear_stock"):
     for k in stock_keys:
         st.session_state[k] = False
     st.session_state["clear_stock"] = False
     st.rerun()
-
 
 # ========================
 # 🧼 LIMPEZA
@@ -137,6 +179,17 @@ with st.sidebar.expander("🧸 Espumas"):
 # ========================
 with st.sidebar.expander("🕳️ Material cavitário"):
     st.checkbox("Cronocol", key="cronocol")
+
+st.sidebar.markdown("### 🏥 Perfis de stock")
+
+perfil = st.sidebar.selectbox(
+    "Selecionar perfil",
+    list(stock_profiles.keys())
+)
+
+if st.sidebar.button("Aplicar perfil"):
+    st.session_state["apply_profile"] = perfil
+    st.rerun()
 
 
 # ========================
