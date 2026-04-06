@@ -56,26 +56,44 @@ if "stock" not in st.session_state:
     }
 
 # ========================
-# 📦 SIDEBAR (FINAL LIMPA)
+# 📦 SIDEBAR FINAL
 # ========================
 st.sidebar.title("📦 Stock disponível")
 
 # ========================
 # INICIALIZAR STATE
 # ========================
-for item in [
+stock_keys = [
     "prontosan","granudacyn","betadine",
     "urgoclean","urgoclean_ag","flaminal","ulcerase",
     "mel","inadine","iodosorb","silverderma",
     "polymem","mepilex","mepilex_ag",
     "cronocol"
-]:
-    if item not in st.session_state:
-        st.session_state[item] = True
+]
+
+for k in stock_keys:
+    if k not in st.session_state:
+        st.session_state[k] = True
 
 
 # ========================
-# LIMPEZA
+# ⚙️ BOTÕES PRIMEIRO (CRÍTICO)
+# ========================
+st.sidebar.markdown("### ⚙️ Gestão de stock")
+
+if st.sidebar.button("🔄 Reset stock"):
+    for k in stock_keys:
+        st.session_state[k] = True
+    st.rerun()
+
+if st.sidebar.button("🚫 Limpar stock"):
+    for k in stock_keys:
+        st.session_state[k] = False
+    st.rerun()
+
+
+# ========================
+# 🧼 LIMPEZA
 # ========================
 with st.sidebar.expander("🧼 Limpeza"):
     st.checkbox("Prontosan", key="prontosan")
@@ -84,7 +102,7 @@ with st.sidebar.expander("🧼 Limpeza"):
 
 
 # ========================
-# DESBRIDAMENTO
+# 🧽 DESBRIDAMENTO
 # ========================
 with st.sidebar.expander("🧽 Desbridamento"):
     st.checkbox("Urgoclean", key="urgoclean")
@@ -94,7 +112,7 @@ with st.sidebar.expander("🧽 Desbridamento"):
 
 
 # ========================
-# ANTIMICROBIANOS
+# 🦠 ANTIMICROBIANOS
 # ========================
 with st.sidebar.expander("🦠 Antimicrobianos"):
     st.checkbox("Mel", key="mel")
@@ -104,7 +122,7 @@ with st.sidebar.expander("🦠 Antimicrobianos"):
 
 
 # ========================
-# ESPUMAS
+# 🧸 ESPUMAS
 # ========================
 with st.sidebar.expander("🧸 Espumas"):
     st.checkbox("Polymem", key="polymem")
@@ -113,38 +131,10 @@ with st.sidebar.expander("🧸 Espumas"):
 
 
 # ========================
-# CAVITÁRIO
+# 🕳️ CAVITÁRIO
 # ========================
 with st.sidebar.expander("🕳️ Material cavitário"):
     st.checkbox("Cronocol", key="cronocol")
-
-
-# ========================
-# ⚙️ BOTÕES DE GESTÃO
-# ========================
-st.sidebar.markdown("### ⚙️ Gestão de stock")
-
-if st.sidebar.button("🔄 Reset stock"):
-    for k in [
-        "prontosan","granudacyn","betadine",
-        "urgoclean","urgoclean_ag","flaminal","ulcerase",
-        "mel","inadine","iodosorb","silverderma",
-        "polymem","mepilex","mepilex_ag",
-        "cronocol"
-    ]:
-        st.session_state[k] = True
-    st.rerun()
-
-if st.sidebar.button("🚫 Limpar stock"):
-    for k in [
-        "prontosan","granudacyn","betadine",
-        "urgoclean","urgoclean_ag","flaminal","ulcerase",
-        "mel","inadine","iodosorb","silverderma",
-        "polymem","mepilex","mepilex_ag",
-        "cronocol"
-    ]:
-        st.session_state[k] = False
-    st.rerun()
 # ========================
 # UI
 # ========================
