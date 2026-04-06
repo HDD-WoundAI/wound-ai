@@ -171,109 +171,109 @@ if override:
         key="fistula"
     )
     # ========================
-# ========================
-# 🧠 NEUROPATIA
-# ========================
-st.markdown("## 🧠 Neuropatia")
-
-neuropatia = st.checkbox("Neuropatia conhecida")
-
-if not neuropatia:
-
-    with st.expander("Avaliação da neuropatia"):
-
-        st.markdown("### Sensibilidades")
-
-        tactil = st.checkbox("Táctil (presente)", key="tactil")
-        vibratoria = st.checkbox("Vibratória (presente)", key="vibratoria")
-        dolorosa = st.checkbox("Dolorosa (presente)", key="dolorosa")
-        termica = st.checkbox("Térmica (presente)", key="termica")
-
-        # ========================
-        # 🧠 INTERPRETAÇÃO CLÍNICA
-        # ========================
-        alteracoes = []
-
-        if not tactil:
-            alteracoes.append("táctil")
-        if not vibratoria:
-            alteracoes.append("vibratória")
-        if not dolorosa:
-            alteracoes.append("dolorosa")
-        if not termica:
-            alteracoes.append("térmica")
-
-        if not tactil:
-            st.error("Neuropatia provável: perda de sensibilidade protectora (táctil)")
-
-        elif len(alteracoes) >= 2:
-            st.warning("Neuropatia provável: múltiplas sensibilidades alteradas (" + ", ".join(alteracoes) + ")")
-
-        elif alteracoes == ["vibratória"]:
-            st.info("Neuropatia pouco provável: apenas sensibilidade vibratória ausente, variável de difícil avaliação. Isolada não atesta diagnóstico")
-
-        elif len(alteracoes) == 1:
-            st.warning("Neuropatia possível: alteração isolada (" + alteracoes[0] + ")")
-
-        else:
-            st.success("Sensibilidades preservadas")
+    # ========================
+    # 🧠 NEUROPATIA
+    # ========================
+    st.markdown("## 🧠 Neuropatia")
     
-
-# ========================
-# 🩸 COMPROMISSO VASCULAR
-# ========================
-st.markdown("## 🩸 Compromisso Vascular")
-
-vascular = st.checkbox("Compromisso vascular conhecido")
-
-iptb = None
-
-if not vascular:
-
-    with st.expander("Avaliação vascular"):
-
-        pulsos = st.selectbox(
-            "Pulsos",
-            ["não determinado", "presentes", "ausentes"],
-            key="pulsos"
-        )
-
-        iptb_direto = st.number_input(
-            "IPTB (valor direto)",
-            value=0.0,
-            key="iptb_direto"
-        )
-
-        st.markdown("#### Ou calcular IPTB")
-
-        braquial = st.number_input("Pressão braquial", key="braquial")
-        tibial = st.number_input("Pressão tibial", key="tibial")
-
-        if braquial > 0 and tibial > 0:
-            iptb = tibial / braquial
-
-        elif iptb_direto > 0:
-            iptb = iptb_direto
-
-        # RESULTADO
-        if iptb:
-
-            st.markdown("### 📊 Resultado IPTB")
-
-            if iptb > 1.4:
-                st.info(f"🔵 IPTB {iptb:.2f} → Calcificação arterial / vasos não compressíveis")
-
-            elif 0.9 <= iptb <= 1.3:
-                st.success(f"🟢 IPTB {iptb:.2f} → Normal")
-
-            elif 0.7 <= iptb < 0.9:
-                st.warning(f"🟡 IPTB {iptb:.2f} → Obstrução ligeira")
-
-            elif 0.4 <= iptb < 0.7:
-                st.warning(f"🟠 IPTB {iptb:.2f} → Obstrução moderada")
-
-            elif iptb < 0.4:
-                st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
+    neuropatia = st.checkbox("Neuropatia conhecida")
+    
+    if not neuropatia:
+    
+        with st.expander("Avaliação da neuropatia"):
+    
+            st.markdown("### Sensibilidades")
+    
+            tactil = st.checkbox("Táctil (presente)", key="tactil")
+            vibratoria = st.checkbox("Vibratória (presente)", key="vibratoria")
+            dolorosa = st.checkbox("Dolorosa (presente)", key="dolorosa")
+            termica = st.checkbox("Térmica (presente)", key="termica")
+    
+            # ========================
+            # 🧠 INTERPRETAÇÃO CLÍNICA
+            # ========================
+            alteracoes = []
+    
+            if not tactil:
+                alteracoes.append("táctil")
+            if not vibratoria:
+                alteracoes.append("vibratória")
+            if not dolorosa:
+                alteracoes.append("dolorosa")
+            if not termica:
+                alteracoes.append("térmica")
+    
+            if not tactil:
+                st.error("Neuropatia provável: perda de sensibilidade protectora (táctil)")
+    
+            elif len(alteracoes) >= 2:
+                st.warning("Neuropatia provável: múltiplas sensibilidades alteradas (" + ", ".join(alteracoes) + ")")
+    
+            elif alteracoes == ["vibratória"]:
+                st.info("Neuropatia pouco provável: apenas sensibilidade vibratória ausente, variável de difícil avaliação. Isolada não atesta diagnóstico")
+    
+            elif len(alteracoes) == 1:
+                st.warning("Neuropatia possível: alteração isolada (" + alteracoes[0] + ")")
+    
+            else:
+                st.success("Sensibilidades preservadas")
+        
+    
+    # ========================
+    # 🩸 COMPROMISSO VASCULAR
+    # ========================
+    st.markdown("## 🩸 Compromisso Vascular")
+    
+    vascular = st.checkbox("Compromisso vascular conhecido")
+    
+    iptb = None
+    
+    if not vascular:
+    
+        with st.expander("Avaliação vascular"):
+    
+            pulsos = st.selectbox(
+                "Pulsos",
+                ["não determinado", "presentes", "ausentes"],
+                key="pulsos"
+            )
+    
+            iptb_direto = st.number_input(
+                "IPTB (valor direto)",
+                value=0.0,
+                key="iptb_direto"
+            )
+    
+            st.markdown("#### Ou calcular IPTB")
+    
+            braquial = st.number_input("Pressão braquial", key="braquial")
+            tibial = st.number_input("Pressão tibial", key="tibial")
+    
+            if braquial > 0 and tibial > 0:
+                iptb = tibial / braquial
+    
+            elif iptb_direto > 0:
+                iptb = iptb_direto
+    
+            # RESULTADO
+            if iptb:
+    
+                st.markdown("### 📊 Resultado IPTB")
+    
+                if iptb > 1.4:
+                    st.info(f"🔵 IPTB {iptb:.2f} → Calcificação arterial / vasos não compressíveis")
+    
+                elif 0.9 <= iptb <= 1.3:
+                    st.success(f"🟢 IPTB {iptb:.2f} → Normal")
+    
+                elif 0.7 <= iptb < 0.9:
+                    st.warning(f"🟡 IPTB {iptb:.2f} → Obstrução ligeira")
+    
+                elif 0.4 <= iptb < 0.7:
+                    st.warning(f"🟠 IPTB {iptb:.2f} → Obstrução moderada")
+    
+                elif iptb < 0.4:
+                    st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
 # ========================
 # DECISÃO
 # ========================
