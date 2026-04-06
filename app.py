@@ -231,7 +231,7 @@ if override:
 # ========================
 # DECISÃO
 # ========================
-    if st.button("🧠 Gerar Plano"):
+if st.button("🧠 Gerar Plano"):
 
     st.markdown("## 🥇 Plano de Tratamento")
 
