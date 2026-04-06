@@ -217,7 +217,7 @@ if not neuropatia:
 
         else:
             st.success("Sensibilidades preservadas")
-    vascular = st.checkbox("Compromisso vascular")
+    
 
 # ========================
 # 🩸 COMPROMISSO VASCULAR
