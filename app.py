@@ -11,21 +11,54 @@ st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ========================
-# STORAGE
+# 💾 STORAGE
 # ========================
 DATA_FILE = "casos.json"
+PROFILES_FILE = "profiles.json"
 
-def guardar_caso(caso):
+
+# ========================
+# 📥 LOAD GENÉRICO
+# ========================
+def load_json(file):
     try:
-        with open(DATA_FILE, "r") as f:
-            dados = json.load(f)
+        with open(file, "r") as f:
+            return json.load(f)
     except:
+        return None
+
+
+# ========================
+# 📤 SAVE GENÉRICO
+# ========================
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ========================
+# 📁 CASOS
+# ========================
+def guardar_caso(caso):
+    dados = load_json(DATA_FILE)
+
+    if not dados:
         dados = []
 
     dados.append(caso)
 
-    with open(DATA_FILE, "w") as f:
-        json.dump(dados, f)
+    save_json(DATA_FILE, dados)
+
+
+# ========================
+# 📦 PERFIS
+# ========================
+def load_profiles():
+    return load_json(PROFILES_FILE)
+
+
+def save_profiles(profiles):
+    save_json(PROFILES_FILE, profiles)
 
 # ========================
 # SESSION
