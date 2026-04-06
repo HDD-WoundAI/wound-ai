@@ -74,8 +74,8 @@ stock_keys = [
 # ========================
 # 📦 PERFIS DE STOCK
 # ========================
-if "st.session_state.stock_profiles" not in st.session_state:
-    st.session_state.st.session_state.stock_profiles = {
+if "stock_profiles" not in st.session_state:
+    st.session_state.stock_profiles = {
         "ULS (Completo)": {k: True for k in stock_keys},
         "HDD (Diabetes)": {
             "prontosan": True,
@@ -95,7 +95,6 @@ if "st.session_state.stock_profiles" not in st.session_state:
             "cronocol": True
         }
     }
-
 # ========================
 # INICIALIZAR STATE
 # ========================
