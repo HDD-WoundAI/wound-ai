@@ -56,12 +56,12 @@ if "stock" not in st.session_state:
     }
 
 # ========================
-# 📦 SIDEBAR FINAL
+# 📦 SIDEBAR FINAL LIMPA
 # ========================
 st.sidebar.title("📦 Stock disponível")
 
 # ========================
-# INICIALIZAR STATE
+# KEYS DE STOCK
 # ========================
 stock_keys = [
     "prontosan","granudacyn","betadine",
@@ -71,25 +71,12 @@ stock_keys = [
     "cronocol"
 ]
 
+# ========================
+# INICIALIZAR STATE
+# ========================
 for k in stock_keys:
     if k not in st.session_state:
         st.session_state[k] = True
-
-
-# ========================
-# ⚙️ BOTÕES PRIMEIRO (CRÍTICO)
-# ========================
-st.sidebar.markdown("### ⚙️ Gestão de stock")
-
-if st.sidebar.button("🔄 Reset stock"):
-    for k in stock_keys:
-        st.session_state[k] = True
-    st.rerun()
-
-if st.sidebar.button("🚫 Limpar stock"):
-    for k in stock_keys:
-        st.session_state[k] = False
-    st.rerun()
 
 
 # ========================
@@ -135,18 +122,27 @@ with st.sidebar.expander("🧸 Espumas"):
 # ========================
 with st.sidebar.expander("🕳️ Material cavitário"):
     st.checkbox("Cronocol", key="cronocol")
-# ========================
-# UI
-# ========================
-st.title("👣 Assistente Pé Diabético")
 
-col1, col2 = st.columns([2, 1])
+
+# ========================
+# ⚙️ GESTÃO DE STOCK (NO FUNDO)
+# ========================
+st.sidebar.markdown("---")
+st.sidebar.markdown("### ⚙️ Gestão de stock")
+
+col1, col2 = st.sidebar.columns(2)
 
 with col1:
-    nome = st.text_input("Nome do doente")
+    if st.button("🔄 Reset"):
+        for k in stock_keys:
+            st.session_state[k] = True
+        st.rerun()
 
 with col2:
-    processo = st.text_input("Nº processo", max_chars=10)
+    if st.button("🚫 Limpar"):
+        for k in stock_keys:
+            st.session_state[k] = False
+        st.rerun()
 
 # ========================
 # 📸 IMAGEM
