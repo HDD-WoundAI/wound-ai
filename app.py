@@ -34,6 +34,28 @@ if "ia_output" not in st.session_state:
     st.session_state.ia_output = None
 
 # ========================
+# STOCK (COMPLETO)
+# ========================
+if "stock" not in st.session_state:
+    st.session_state.stock = {
+        "prontosan": True,
+        "granudacyn": True,
+        "betadine": True,
+        "urgoclean": True,
+        "urgoclean_ag": True,
+        "flaminal": True,
+        "ulcerase": True,
+        "mel": True,
+        "inadine": True,
+        "iodosorb": True,
+        "silverderma": True,
+        "polymem": True,
+        "mepilex": True,
+        "mepilex_ag": True,
+        "cronocol": True
+    }
+
+# ========================
 # 📦 SIDEBAR (CORRIGIDO)
 # ========================
 st.sidebar.title("📦 Stock disponível")
