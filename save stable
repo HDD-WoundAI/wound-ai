@@ -141,9 +141,29 @@ st.markdown("## 🔧 Ajustes manuais")
 override = st.checkbox("Adicionar dados clínicos")
 
 if override:
-    infeccao = st.selectbox("Infeção", ["não", "sim"])
-    exsudado = st.selectbox("Exsudado", ["baixo", "moderado", "alto"])
-    fistula = st.checkbox("Fístula")
+
+    tecido = st.selectbox(
+        "Tecido predominante",
+        ["não determinado", "necrose", "fibrina", "granulação"],
+        key="tecido"
+    )
+
+    infeccao = st.selectbox(
+        "Infeção",
+        ["não", "sim"],
+        key="infeccao"
+    )
+
+    exsudado = st.selectbox(
+        "Exsudado",
+        ["baixo", "moderado", "alto"],
+        key="exsudado"
+    )
+
+    fistula = st.checkbox(
+        "Fístula",
+        key="fistula"
+    )
     # ========================
 # 🧠 NEUROPATIA
 # ========================
