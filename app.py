@@ -171,40 +171,52 @@ if override:
         key="fistula"
     )
     # ========================
+# ========================
 # 🧠 NEUROPATIA
 # ========================
-st.markdown("## 🧠 Neuropatia (opcional)")
+st.markdown("## 🧠 Neuropatia")
 
-avaliar_neuropatia = st.checkbox("Avaliar neuropatia")
+neuropatia = st.checkbox("Neuropatia conhecida")
 
-if avaliar_neuropatia:
+if not neuropatia:
 
-    st.markdown("### Sensibilidades")
+    with st.expander("Avaliação da neuropatia"):
 
-    with st.expander("Ver detalhes das sensibilidades"):
+        st.markdown("### Sensibilidades")
 
-        tactil = st.checkbox("Táctil (presente)")
-        vibratoria = st.checkbox("Vibratória (presente)")
-        dolorosa = st.checkbox("Dolorosa (presente)")
-        termica = st.checkbox("Térmica (presente)")
+        tactil = st.checkbox("Táctil (presente)", key="tactil")
+        vibratoria = st.checkbox("Vibratória (presente)", key="vibratoria")
+        dolorosa = st.checkbox("Dolorosa (presente)", key="dolorosa")
+        termica = st.checkbox("Térmica (presente)", key="termica")
 
-    # Interpretação automática
-    alteracoes = []
+        # ========================
+        # 🧠 INTERPRETAÇÃO CLÍNICA
+        # ========================
+        alteracoes = []
 
-    if not tactil:
-        alteracoes.append("↓ táctil")
-    if not vibratoria:
-        alteracoes.append("↓ vibratória")
-    if not dolorosa:
-        alteracoes.append("↓ dolorosa")
-    if not termica:
-        alteracoes.append("↓ térmica")
+        if not tactil:
+            alteracoes.append("táctil")
+        if not vibratoria:
+            alteracoes.append("vibratória")
+        if not dolorosa:
+            alteracoes.append("dolorosa")
+        if not termica:
+            alteracoes.append("térmica")
 
-    # Output clínico
-    if alteracoes:
-        st.warning("Neuropatia provável: " + ", ".join(alteracoes))
-    else:
-        st.success("Sensibilidades preservadas")
+        if not tactil:
+            st.error("Neuropatia provável: perda de sensibilidade protectora (táctil)")
+
+        elif len(alteracoes) >= 2:
+            st.warning("Neuropatia provável: múltiplas sensibilidades alteradas (" + ", ".join(alteracoes) + ")")
+
+        elif alteracoes == ["vibratória"]:
+            st.info("Neuropatia pouco provável: apenas sensibilidade vibratória ausente, variável de difícil avaliação. Isolada não atesta diagnóstico")
+
+        elif len(alteracoes) == 1:
+            st.warning("Neuropatia possível: alteração isolada (" + alteracoes[0] + ")")
+
+        else:
+            st.success("Sensibilidades preservadas")
     vascular = st.checkbox("Compromisso vascular")
 
 # ========================
