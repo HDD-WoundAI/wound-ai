@@ -192,6 +192,21 @@ if st.sidebar.button("Aplicar perfil"):
     st.rerun()
 
 
+# 👇 AQUI ENTRA O GUARDAR PERFIL
+st.sidebar.markdown("### 💾 Guardar perfil")
+
+novo_nome = st.sidebar.text_input("Nome do novo perfil")
+
+if st.sidebar.button("Guardar perfil atual"):
+    if novo_nome:
+        stock_profiles[novo_nome] = {
+            k: st.session_state[k] for k in stock_keys
+        }
+        st.success(f"Perfil '{novo_nome}' guardado")
+    else:
+        st.warning("Dá um nome ao perfil")
+
+
 # ========================
 # ⚙️ GESTÃO DE STOCK (SEGURO)
 # ========================
