@@ -78,6 +78,21 @@ for k in stock_keys:
     if k not in st.session_state:
         st.session_state[k] = True
 
+# ========================
+# APLICAR RESET/LIMPAR (ANTES DOS WIDGETS)
+# ========================
+if st.session_state.get("reset_stock"):
+    for k in stock_keys:
+        st.session_state[k] = True
+    st.session_state["reset_stock"] = False
+    st.rerun()
+
+if st.session_state.get("clear_stock"):
+    for k in stock_keys:
+        st.session_state[k] = False
+    st.session_state["clear_stock"] = False
+    st.rerun()
+
 
 # ========================
 # 🧼 LIMPEZA
@@ -125,7 +140,7 @@ with st.sidebar.expander("🕳️ Material cavitário"):
 
 
 # ========================
-# ⚙️ GESTÃO DE STOCK (NO FUNDO)
+# ⚙️ GESTÃO DE STOCK (SEGURO)
 # ========================
 st.sidebar.markdown("---")
 st.sidebar.markdown("### ⚙️ Gestão de stock")
@@ -134,15 +149,11 @@ col1, col2 = st.sidebar.columns(2)
 
 with col1:
     if st.button("🔄 Reset"):
-        for k in stock_keys:
-            st.session_state[k] = True
-        st.rerun()
+        st.session_state["reset_stock"] = True
 
 with col2:
     if st.button("🚫 Limpar"):
-        for k in stock_keys:
-            st.session_state[k] = False
-        st.rerun()
+        st.session_state["clear_stock"] = True
 
 # ========================
 # 📸 IMAGEM
