@@ -68,7 +68,13 @@ with st.sidebar.expander("🕳️ Material cavitário"):
 # ========================
 st.title("👣 Assistente Pé Diabético")
 
-nome = st.text_input("Nome / ID do doente")
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    nome = st.text_input("Nome do doente")
+
+with col2:
+    processo = st.text_input("Nº processo", max_chars=10)
 
 # ========================
 # 📸 IMAGEM
