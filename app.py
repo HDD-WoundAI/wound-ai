@@ -91,53 +91,7 @@ if imagem:
 
     st.image(img, use_column_width=True)
 
-# ========================
-# IA
-# ========================
-if imagem:
 
-    base64_image = base64.b64encode(bytes_data).decode("utf-8")
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """
-Analisa esta ferida.
-
-Indica:
-- tecido
-- exsudado
-- infeção
-
-E sugere plano com materiais.
-"""
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
-                        },
-                    ],
-                }
-            ],
-        )
-
-        st.session_state.ia_output = response.choices[0].message.content
-
-    except:
-        st.warning("IA indisponível")
-
-# ========================
-# MOSTRAR IA
-# ========================
-if st.session_state.ia_output:
-    st.markdown("## 🤖 Plano automático")
-    st.write(st.session_state.ia_output)
 
 # ========================
 # INPUTS MANUAIS
