@@ -230,8 +230,7 @@ if override:
                     st.error(f"🔴 IPTB {iptb:.2f} → Isquemia grave")
 # ========================
 # DECISÃO
-# ========================
-if st.button("🧠 Gerar Plano"):
+# ========================if st.button("🧠 Gerar Plano"):
 
     st.markdown("## 🥇 Plano de Tratamento")
 
@@ -343,7 +342,6 @@ Inclui:
         st.warning("Risco de maceração")
 
     st.warning("Confirmar descarga")
-
 # ========================
 # GUARDAR
 # ========================
