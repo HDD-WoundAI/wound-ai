@@ -399,14 +399,13 @@ if st.button("🧠 Gerar Plano"):
 
     stock = []
 
-    if polymem: stock.append("Polymem")
-    if mepilex: stock.append("Mepilex")
-    if mepilex_ag: stock.append("Mepilex AG")
-    if urgoclean: stock.append("Urgoclean")
-    if urgoclean_ag: stock.append("Urgoclean AG")
-    if mel: stock.append("Mel")
-    if cronocol: stock.append("Cronocol")
-
+    if st.session_state["polymem"]: stock.append("Polymem")
+    if st.session_state["mepilex"]: stock.append("Mepilex")
+    if st.session_state["mepilex_ag"]: stock.append("Mepilex AG")
+    if st.session_state["urgoclean"]: stock.append("Urgoclean")
+    if st.session_state["urgoclean_ag"]: stock.append("Urgoclean AG")
+    if st.session_state["mel"]: stock.append("Mel")
+    if st.session_state["cronocol"]: stock.append("Cronocol")
     contexto = ""
 
     if override:
