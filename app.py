@@ -206,6 +206,12 @@ if st.sidebar.button("Guardar perfil atual"):
     else:
         st.warning("Dá um nome ao perfil")
 
+if st.sidebar.button("Atualizar perfil selecionado"):
+    stock_profiles[perfil] = {
+        k: st.session_state[k] for k in stock_keys
+    }
+    st.success(f"Perfil '{perfil}' atualizado")
+
 
 # ========================
 # ⚙️ GESTÃO DE STOCK (SEGURO)
