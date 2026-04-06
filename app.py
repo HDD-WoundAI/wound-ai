@@ -94,7 +94,7 @@ if imagem:
 # ========================
 # IA
 # ========================
-imagem:
+if imagem:
 
     base64_image = base64.b64encode(bytes_data).decode("utf-8")
 
