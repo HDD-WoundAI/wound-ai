@@ -74,27 +74,27 @@ stock_keys = [
 # ========================
 # 📦 PERFIS DE STOCK
 # ========================
-stock_profiles = {
-    "ULS (Completo)": {k: True for k in stock_keys},
-
-    "HDD (Diabetes)": {
-        "prontosan": True,
-        "granudacyn": True,
-        "betadine": True,
-        "urgoclean": True,
-        "urgoclean_ag": False,
-        "flaminal": True,
-        "ulcerase": False,
-        "mel": True,
-        "inadine": True,
-        "iodosorb": False,
-        "silverderma": True,
-        "polymem": True,
-        "mepilex": True,
-        "mepilex_ag": True,
-        "cronocol": True
+if "stock_profiles" not in st.session_state:
+    st.session_state.stock_profiles = {
+        "ULS (Completo)": {k: True for k in stock_keys},
+        "HDD (Diabetes)": {
+            "prontosan": True,
+            "granudacyn": True,
+            "betadine": True,
+            "urgoclean": True,
+            "urgoclean_ag": False,
+            "flaminal": True,
+            "ulcerase": False,
+            "mel": True,
+            "inadine": True,
+            "iodosorb": False,
+            "silverderma": True,
+            "polymem": True,
+            "mepilex": True,
+            "mepilex_ag": True,
+            "cronocol": True
+        }
     }
-}
 
 # ========================
 # INICIALIZAR STATE
