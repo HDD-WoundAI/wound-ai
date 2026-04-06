@@ -150,10 +150,12 @@ col1, col2 = st.sidebar.columns(2)
 with col1:
     if st.button("🔄 Reset"):
         st.session_state["reset_stock"] = True
+        st.rerun()
 
 with col2:
     if st.button("🚫 Limpar"):
         st.session_state["clear_stock"] = True
+        st.rerun()
 
 # ========================
 # 📸 IMAGEM
