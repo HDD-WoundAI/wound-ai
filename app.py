@@ -74,8 +74,8 @@ stock_keys = [
 # ========================
 # 📦 PERFIS DE STOCK
 # ========================
-if "stock_profiles" not in st.session_state:
-    st.session_state.stock_profiles = {
+if "st.session_state.stock_profiles" not in st.session_state:
+    st.session_state.st.session_state.stock_profiles = {
         "ULS (Completo)": {k: True for k in stock_keys},
         "HDD (Diabetes)": {
             "prontosan": True,
@@ -108,7 +108,7 @@ for k in stock_keys:
 # ========================
 if st.session_state.get("apply_profile"):
     perfil_nome = st.session_state["apply_profile"]
-    perfil_data = stock_profiles[perfil_nome]
+    perfil_data = st.session_state.stock_profiles[perfil_nome]
 
     for k in stock_keys:
         st.session_state[k] = perfil_data.get(k, False)
@@ -184,7 +184,7 @@ st.sidebar.markdown("### 🏥 Perfis de stock")
 
 perfil = st.sidebar.selectbox(
     "Selecionar perfil",
-    list(st.session_state.stock_profiles.keys())
+    list(st.session_state.st.session_state.stock_profiles.keys())
 )
 
 if st.sidebar.button("Aplicar perfil"):
@@ -199,7 +199,7 @@ novo_nome = st.sidebar.text_input("Nome do novo perfil")
 
 if st.sidebar.button("Guardar perfil atual"):
     if novo_nome:
-        stock_profiles[novo_nome] = {
+        st.session_state.stock_profiles[novo_nome] = {
             k: st.session_state[k] for k in stock_keys
         }
         st.success(f"Perfil '{novo_nome}' guardado")
@@ -207,7 +207,7 @@ if st.sidebar.button("Guardar perfil atual"):
         st.warning("Dá um nome ao perfil")
 
 if st.sidebar.button("Atualizar perfil selecionado"):
-    stock_profiles[perfil] = {
+    st.session_state.stock_profiles[perfil] = {
         k: st.session_state[k] for k in stock_keys
     }
     st.success(f"Perfil '{perfil}' atualizado")
