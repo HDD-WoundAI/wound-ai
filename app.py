@@ -183,7 +183,7 @@ st.sidebar.markdown("### 🏥 Perfis de stock")
 
 perfil = st.sidebar.selectbox(
     "Selecionar perfil",
-    list(st.session_state.st.session_state.stock_profiles.keys())
+    list(st.session_state.stock_profiles.keys())
 )
 
 if st.sidebar.button("Aplicar perfil"):
