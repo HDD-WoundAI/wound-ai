@@ -233,34 +233,107 @@ if override:
 # ========================
 if st.button("🧠 Gerar Plano"):
 
-    st.markdown("## 🥇 Plano final")
+    st.markdown("## 🥇 Plano de Tratamento")
+
+    # ========================
+    # 🤖 IA (PLANO PRINCIPAL)
+    # ========================
+    imagem_base64 = None
+
+    if imagem:
+        imagem_base64 = base64.b64encode(bytes_data).decode("utf-8")
+
+    stock = []
+
+    if polymem: stock.append("Polymem")
+    if mepilex: stock.append("Mepilex")
+    if mepilex_ag: stock.append("Mepilex AG")
+    if urgoclean: stock.append("Urgoclean")
+    if urgoclean_ag: stock.append("Urgoclean AG")
+    if mel: stock.append("Mel")
+    if cronocol: stock.append("Cronocol")
+
+    contexto = ""
+
+    if override:
+        contexto += f"""
+Tecido: {tecido}
+Exsudado: {exsudado}
+Infeção: {infeccao}
+Fístula: {fistula}
+Vascular: {vascular}
+"""
+        if iptb:
+            contexto += f"\nIPTB: {iptb:.2f}"
+
+    prompt = f"""
+Define plano de tratamento para pé diabético.
+
+Material disponível:
+{", ".join(stock)}
+
+{contexto}
+
+Inclui:
+- plano principal
+- alternativas
+- notas clínicas
+"""
+
+    try:
+        if imagem_base64:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{imagem_base64}"}},
+                        ],
+                    }
+                ],
+            )
+        else:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+        resultado = response.choices[0].message.content
+
+        st.write(resultado)
+
+    except:
+        st.error("Erro IA")
+
+    # ========================
+    # ⚙️ AJUSTES CLÍNICOS TEUS
+    # ========================
+    st.markdown("## ⚙️ Ajustes clínicos automáticos")
 
     plano = []
 
     if override:
 
         if exsudado == "alto" and not vascular:
-            plano.append("TPN (100 mmHg)")
+            plano.append("Considerar TPN (100 mmHg)")
 
         if infeccao == "sim":
-            if mepilex_ag:
-                plano.append("Mepilex AG")
-            elif mel:
-                plano.append("Mel")
+            plano.append("Garantir cobertura antimicrobiana")
 
         if fistula and cronocol:
-            plano.append("Cronocol")
+            plano.append("Preencher cavidade com Cronocol")
 
-        if urgoclean:
-            plano.append("Urgoclean + hidrogel")
-
-    else:
-        plano.append("Seguir plano da IA")
+        if urgoclean and tecido == "fibrina":
+            plano.append("Urgoclean + hidrogel (potenciar desbridamento)")
 
     for p in plano:
         st.write(f"• {p}")
 
-    # ALERTAS
+    # ========================
+    # ⚠️ ALERTAS (MANTIDOS)
+    # ========================
     st.markdown("## ⚠️ Alertas")
 
     if override and iptb and iptb < 0.5:
