@@ -11,21 +11,107 @@ st.set_page_config(page_title="Assistente Pé Diabético", layout="centered")
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ========================
-# STORAGE
+# 💾 STORAGE
 # ========================
 DATA_FILE = "casos.json"
+PROFILES_FILE = "profiles.json"
+MATERIAIS_FILE = "materiais.json"
 
-def guardar_caso(caso):
+
+# ========================
+# 📥 LOAD GENÉRICO
+# ========================
+def load_json(file):
     try:
-        with open(DATA_FILE, "r") as f:
-            dados = json.load(f)
-    except:
+        with open(file, "r") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+# ========================
+# 📤 SAVE GENÉRICO
+# ========================
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ========================
+# 📁 CASOS
+# ========================
+def guardar_caso(caso):
+    dados = load_json(DATA_FILE)
+
+    if not dados:
         dados = []
 
     dados.append(caso)
 
-    with open(DATA_FILE, "w") as f:
-        json.dump(dados, f)
+    save_json(DATA_FILE, dados)
+
+
+# ========================
+# 📦 PERFIS
+# ========================
+def load_profiles():
+    return load_json(PROFILES_FILE)
+
+def save_profiles(profiles):
+    save_json(PROFILES_FILE, profiles)
+
+
+# ========================
+# 🧪 MATERIAIS EXTRA (NOVO)
+# ========================
+def load_materiais():
+    return load_json(MATERIAIS_FILE)
+
+def save_materiais(data):
+    save_json(MATERIAIS_FILE, data)
+
+# ========================
+# 📥 LOAD GENÉRICO
+# ========================
+def load_json(file):
+    try:
+        with open(file, "r") as f:
+            return json.load(f)
+    except:
+        return None
+
+
+# ========================
+# 📤 SAVE GENÉRICO
+# ========================
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ========================
+# 📁 CASOS
+# ========================
+def guardar_caso(caso):
+    dados = load_json(DATA_FILE)
+
+    if not dados:
+        dados = []
+
+    dados.append(caso)
+
+    save_json(DATA_FILE, dados)
+
+
+# ========================
+# 📦 PERFIS
+# ========================
+def load_profiles():
+    return load_json(PROFILES_FILE)
+
+
+def save_profiles(profiles):
+    save_json(PROFILES_FILE, profiles)
 
 # ========================
 # SESSION
@@ -61,6 +147,12 @@ if "stock" not in st.session_state:
 st.sidebar.title("📦 Stock disponível")
 
 # ========================
+# UI
+# ========================
+st.title("👣 Assistente Pé Diabético")
+
+
+# ========================
 # KEYS DE STOCK
 # ========================
 stock_keys = [
@@ -72,14 +164,83 @@ stock_keys = [
 ]
 
 # ========================
+# 📂 CATEGORIAS DE MATERIAL
+# ========================
+material_categorias = [
+    "limpeza",
+    "desbridamento",
+    "antimicrobianos",
+    "espumas",
+    "cavitario",
+    "tpn",
+    "barreira",
+    "outros"
+]
+# ========================
+# 📦 PERFIS DE STOCK
+# ========================
+if "stock_profiles" not in st.session_state:
+
+    saved_profiles = load_profiles()
+
+    if saved_profiles:
+        st.session_state.stock_profiles = saved_profiles
+    else:
+        st.session_state.stock_profiles = {
+            "ULS (Completo)": {k: True for k in stock_keys},
+            "HDD (Diabetes)": {
+                "prontosan": True,
+                "granudacyn": True,
+                "betadine": True,
+                "urgoclean": True,
+                "urgoclean_ag": False,
+                "flaminal": True,
+                "ulcerase": False,
+                "mel": True,
+                "inadine": True,
+                "iodosorb": False,
+                "silverderma": True,
+                "polymem": True,
+                "mepilex": True,
+                "mepilex_ag": True,
+                "cronocol": True
+            }
+        }
+# ========================
 # INICIALIZAR STATE
 # ========================
 for k in stock_keys:
     if k not in st.session_state:
         st.session_state[k] = True
 
+
 # ========================
-# APLICAR RESET/LIMPAR (ANTES DOS WIDGETS)
+# 📦 MATERIAIS EXTRA (NOVO)
+# ========================
+if "materiais_extra" not in st.session_state:
+    st.session_state.materiais_extra = {
+        "limpeza": [],
+        "desbridamento": [],
+        "antimicrobianos": [],
+        "espumas": [],
+        "cavitario": []
+    }
+# ========================
+# APLICAR PERFIL
+# ========================
+if st.session_state.get("apply_profile"):
+    perfil_nome = st.session_state["apply_profile"]
+    perfil_data = st.session_state.stock_profiles[perfil_nome]
+
+    for k in stock_keys:
+        st.session_state[k] = perfil_data.get(k, False)
+
+    st.session_state["apply_profile"] = None
+    st.rerun()
+
+
+# ========================
+# APLICAR RESET
 # ========================
 if st.session_state.get("reset_stock"):
     for k in stock_keys:
@@ -87,12 +248,15 @@ if st.session_state.get("reset_stock"):
     st.session_state["reset_stock"] = False
     st.rerun()
 
+
+# ========================
+# APLICAR LIMPAR
+# ========================
 if st.session_state.get("clear_stock"):
     for k in stock_keys:
         st.session_state[k] = False
     st.session_state["clear_stock"] = False
     st.rerun()
-
 
 # ========================
 # 🧼 LIMPEZA
@@ -102,6 +266,11 @@ with st.sidebar.expander("🧼 Limpeza"):
     st.checkbox("Granudacyn", key="granudacyn")
     st.checkbox("Betadine", key="betadine")
 
+    for mat in st.session_state.materiais_extra["limpeza"]:
+        key = f"extra_limpeza_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
 
 # ========================
 # 🧽 DESBRIDAMENTO
@@ -111,6 +280,12 @@ with st.sidebar.expander("🧽 Desbridamento"):
     st.checkbox("Urgoclean AG", key="urgoclean_ag")
     st.checkbox("Flaminal", key="flaminal")
     st.checkbox("Ulcerase", key="ulcerase")
+
+    for mat in st.session_state.materiais_extra["desbridamento"]:
+        key = f"extra_desbridamento_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
 
 
 # ========================
@@ -122,6 +297,12 @@ with st.sidebar.expander("🦠 Antimicrobianos"):
     st.checkbox("Iodosorb", key="iodosorb")
     st.checkbox("Silverderma", key="silverderma")
 
+    for mat in st.session_state.materiais_extra["antimicrobianos"]:
+        key = f"extra_antimicrobianos_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
 
 # ========================
 # 🧸 ESPUMAS
@@ -131,12 +312,111 @@ with st.sidebar.expander("🧸 Espumas"):
     st.checkbox("Mepilex", key="mepilex")
     st.checkbox("Mepilex AG", key="mepilex_ag")
 
+    for mat in st.session_state.materiais_extra["espumas"]:
+        key = f"extra_espumas_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
 
 # ========================
 # 🕳️ CAVITÁRIO
 # ========================
 with st.sidebar.expander("🕳️ Material cavitário"):
     st.checkbox("Cronocol", key="cronocol")
+
+    for mat in st.session_state.materiais_extra["cavitario"]:
+        key = f"extra_cavitario_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
+st.sidebar.markdown("### 🏥 Perfis de stock")
+
+perfil = st.sidebar.selectbox(
+    "Selecionar perfil",
+    list(st.session_state.stock_profiles.keys())
+)
+
+if st.sidebar.button("Aplicar perfil"):
+    st.session_state["apply_profile"] = perfil
+    st.rerun()
+
+
+# 👇 GUARDAR / ATUALIZAR PERFIS (COM PERSISTÊNCIA)
+st.sidebar.markdown("### 💾 Guardar perfil")
+
+novo_nome = st.sidebar.text_input("Nome do novo perfil")
+
+# 💾 GUARDAR NOVO PERFIL
+if st.sidebar.button("Guardar perfil atual"):
+    if not novo_nome:
+        st.warning("Dá um nome ao perfil")
+    elif novo_nome in st.session_state.stock_profiles:
+        st.warning("Já existe um perfil com esse nome — usa 'Atualizar'")
+    else:
+        st.session_state.stock_profiles[novo_nome] = {
+            k: st.session_state[k] for k in stock_keys
+        }
+        save_profiles(st.session_state.stock_profiles)
+        st.success(f"Perfil '{novo_nome}' guardado")
+
+
+# ✏️ ATUALIZAR PERFIL EXISTENTE
+if st.sidebar.button("Atualizar perfil selecionado"):
+    if perfil not in st.session_state.stock_profiles:
+        st.warning("Perfil inválido")
+    else:
+        st.session_state.stock_profiles[perfil] = {
+            k: st.session_state[k] for k in stock_keys
+        }
+        save_profiles(st.session_state.stock_profiles)
+        st.success(f"Perfil '{perfil}' atualizado")
+
+
+# ========================
+# ➕ ADICIONAR MATERIAL
+# ========================
+st.sidebar.markdown("### ➕ Adicionar material")
+
+novo_material = st.sidebar.text_input("Nome do material")
+
+if st.sidebar.button("Adicionar material"):
+
+    if novo_material:
+
+        prompt = f"""
+Classifica este material médico numa destas categorias:
+- limpeza
+- desbridamento
+- antimicrobianos
+- espumas
+- cavitario
+
+Material: {novo_material}
+
+Responde apenas com a categoria.
+"""
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            categoria = response.choices[0].message.content.strip().lower()
+
+            if categoria in st.session_state.materiais_extra:
+                st.session_state.materiais_extra[categoria].append(novo_material)
+                st.success(f"{novo_material} → {categoria}")
+            else:
+                st.warning("Categoria não reconhecida")
+
+        except:
+            st.error("Erro IA")
+
+    else:
+        st.warning("Escreve o nome do material")
 
 
 # ========================
@@ -326,14 +606,13 @@ if st.button("🧠 Gerar Plano"):
 
     stock = []
 
-    if polymem: stock.append("Polymem")
-    if mepilex: stock.append("Mepilex")
-    if mepilex_ag: stock.append("Mepilex AG")
-    if urgoclean: stock.append("Urgoclean")
-    if urgoclean_ag: stock.append("Urgoclean AG")
-    if mel: stock.append("Mel")
-    if cronocol: stock.append("Cronocol")
-
+    if st.session_state["polymem"]: stock.append("Polymem")
+    if st.session_state["mepilex"]: stock.append("Mepilex")
+    if st.session_state["mepilex_ag"]: stock.append("Mepilex AG")
+    if st.session_state["urgoclean"]: stock.append("Urgoclean")
+    if st.session_state["urgoclean_ag"]: stock.append("Urgoclean AG")
+    if st.session_state["mel"]: stock.append("Mel")
+    if st.session_state["cronocol"]: stock.append("Cronocol")
     contexto = ""
 
     if override:
