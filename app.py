@@ -15,7 +15,60 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # ========================
 DATA_FILE = "casos.json"
 PROFILES_FILE = "profiles.json"
+MATERIAIS_FILE = "materiais.json"
 
+
+# ========================
+# 📥 LOAD GENÉRICO
+# ========================
+def load_json(file):
+    try:
+        with open(file, "r") as f:
+            return json.load(f)
+    except:
+        return None
+
+
+# ========================
+# 📤 SAVE GENÉRICO
+# ========================
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ========================
+# 📁 CASOS
+# ========================
+def guardar_caso(caso):
+    dados = load_json(DATA_FILE)
+
+    if not dados:
+        dados = []
+
+    dados.append(caso)
+
+    save_json(DATA_FILE, dados)
+
+
+# ========================
+# 📦 PERFIS
+# ========================
+def load_profiles():
+    return load_json(PROFILES_FILE)
+
+def save_profiles(profiles):
+    save_json(PROFILES_FILE, profiles)
+
+
+# ========================
+# 🧪 MATERIAIS EXTRA (NOVO)
+# ========================
+def load_materiais():
+    return load_json(MATERIAIS_FILE)
+
+def save_materiais(data):
+    save_json(MATERIAIS_FILE, data)
 
 # ========================
 # 📥 LOAD GENÉRICO
@@ -118,9 +171,11 @@ material_categorias = [
     "desbridamento",
     "antimicrobianos",
     "espumas",
-    "cavitario"
+    "cavitario",
+    "tpn",
+    "barreira",
+    "outros"
 ]
-
 # ========================
 # 📦 PERFIS DE STOCK
 # ========================
