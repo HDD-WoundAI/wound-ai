@@ -434,22 +434,45 @@ Responde apenas com a categoria.
 
             categoria = response.choices[0].message.content.strip().lower()
 
-            st.info(f"IA sugeriu: {categoria}")  # 👈 DEBUG VISUAL
+            # 🧼 limpeza básica
+            categoria = categoria.replace(".", "").replace(",", "").strip()
 
+            st.info(f"IA sugeriu: {categoria}")  # 👈 DEBUG
+
+            # 🧠 normalização inteligente
+            mapa_categorias = {
+                "limpeza": "limpeza",
+                "desbridamento": "desbridamento",
+                "antimicrobianos": "antimicrobianos",
+                "espumas": "espumas",
+                "espuma": "espumas",
+                "cavitario": "cavitario",
+                "cavitário": "cavitario",
+                "tpn": "tpn",
+                "pressao negativa": "tpn",
+                "pressão negativa": "tpn",
+                "vac": "tpn",
+                "barreira": "barreira",
+                "creme": "barreira",
+                "cremes": "barreira",
+                "outros": "outros"
+            }
+
+            categoria = mapa_categorias.get(categoria, categoria)
+
+            # 💾 guardar
             if categoria in st.session_state.materiais_extra:
                 st.session_state.materiais_extra[categoria].append(novo_material)
                 save_materiais(st.session_state.materiais_extra)
                 st.success(f"{novo_material} → {categoria}")
             else:
-                st.warning("Categoria não reconhecida")
+                st.warning(f"Categoria não reconhecida: {categoria}")
 
         except:
             st.error("Erro IA")
 
     else:
         st.warning("Escreve o nome do material")
-
-
 # ========================
 # ⚙️ GESTÃO DE STOCK (SEGURO)
 # ========================
