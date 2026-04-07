@@ -417,6 +417,8 @@ if st.sidebar.button("Adicionar material"):
 
     if novo_material:
 
+        novo_material = novo_material.strip().title()  # 🔤 normalizar nome
+
         prompt = f"""
 Classifica este material médico numa destas categorias:
 {", ".join(material_categorias)}
@@ -460,11 +462,16 @@ Responde apenas com a categoria.
 
             categoria = mapa_categorias.get(categoria, categoria)
 
-            # 💾 guardar
+            # 💾 guardar com proteção contra duplicados
             if categoria in st.session_state.materiais_extra:
-                st.session_state.materiais_extra[categoria].append(novo_material)
-                save_materiais(st.session_state.materiais_extra)
-                st.success(f"{novo_material} → {categoria}")
+
+                if novo_material not in st.session_state.materiais_extra[categoria]:
+                    st.session_state.materiais_extra[categoria].append(novo_material)
+                    save_materiais(st.session_state.materiais_extra)
+                    st.success(f"{novo_material} → {categoria}")
+                else:
+                    st.warning("Material já existe nesta categoria")
+
             else:
                 st.warning(f"Categoria não reconhecida: {categoria}")
 
