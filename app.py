@@ -434,6 +434,8 @@ Responde apenas com a categoria.
 
             categoria = response.choices[0].message.content.strip().lower()
 
+            st.info(f"IA sugeriu: {categoria}")  # 👈 DEBUG VISUAL
+
             if categoria in st.session_state.materiais_extra:
                 st.session_state.materiais_extra[categoria].append(novo_material)
                 save_materiais(st.session_state.materiais_extra)
