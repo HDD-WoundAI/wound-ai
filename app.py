@@ -283,6 +283,52 @@ if st.sidebar.button("Atualizar perfil selecionado"):
         save_profiles(st.session_state.stock_profiles)
         st.success(f"Perfil '{perfil}' atualizado")
 
+
+# ========================
+# ➕ ADICIONAR MATERIAL
+# ========================
+st.sidebar.markdown("### ➕ Adicionar material")
+
+novo_material = st.sidebar.text_input("Nome do material")
+
+if st.sidebar.button("Adicionar material"):
+
+    if novo_material:
+
+        prompt = f"""
+Classifica este material médico numa destas categorias:
+- limpeza
+- desbridamento
+- antimicrobianos
+- espumas
+- cavitario
+
+Material: {novo_material}
+
+Responde apenas com a categoria.
+"""
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            categoria = response.choices[0].message.content.strip().lower()
+
+            if categoria in st.session_state.materiais_extra:
+                st.session_state.materiais_extra[categoria].append(novo_material)
+                st.success(f"{novo_material} → {categoria}")
+            else:
+                st.warning("Categoria não reconhecida")
+
+        except:
+            st.error("Erro IA")
+
+    else:
+        st.warning("Escreve o nome do material")
+
+
 # ========================
 # ⚙️ GESTÃO DE STOCK (SEGURO)
 # ========================
