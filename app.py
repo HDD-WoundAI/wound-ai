@@ -105,6 +105,17 @@ stock_keys = [
 ]
 
 # ========================
+# 📂 CATEGORIAS DE MATERIAL
+# ========================
+material_categorias = [
+    "limpeza",
+    "desbridamento",
+    "antimicrobianos",
+    "espumas",
+    "cavitario"
+]
+
+# ========================
 # 📦 PERFIS DE STOCK
 # ========================
 if "stock_profiles" not in st.session_state:
@@ -141,6 +152,18 @@ for k in stock_keys:
     if k not in st.session_state:
         st.session_state[k] = True
 
+
+# ========================
+# 📦 MATERIAIS EXTRA (NOVO)
+# ========================
+if "materiais_extra" not in st.session_state:
+    st.session_state.materiais_extra = {
+        "limpeza": [],
+        "desbridamento": [],
+        "antimicrobianos": [],
+        "espumas": [],
+        "cavitario": []
+    }
 # ========================
 # APLICAR PERFIL
 # ========================
