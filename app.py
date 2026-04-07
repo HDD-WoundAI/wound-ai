@@ -333,6 +333,36 @@ with st.sidebar.expander("🕳️ Material cavitário"):
             st.session_state[key] = True
         st.checkbox(mat, key=key)
 
+# ========================
+# 🌀 TPN
+# ========================
+with st.sidebar.expander("🌀 Terapia Pressão Negativa"):
+    for mat in st.session_state.materiais_extra["tpn"]:
+        key = f"extra_tpn_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
+# ========================
+# 🧴 BARREIRAS
+# ========================
+with st.sidebar.expander("🧴 Barreiras / Cremes"):
+    for mat in st.session_state.materiais_extra["barreira"]:
+        key = f"extra_barreira_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
+# ========================
+# 📦 OUTROS
+# ========================
+with st.sidebar.expander("📦 Outros"):
+    for mat in st.session_state.materiais_extra["outros"]:
+        key = f"extra_outros_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
 st.sidebar.markdown("### 🏥 Perfis de stock")
 
 perfil = st.sidebar.selectbox(
@@ -389,11 +419,7 @@ if st.sidebar.button("Adicionar material"):
 
         prompt = f"""
 Classifica este material médico numa destas categorias:
-- limpeza
-- desbridamento
-- antimicrobianos
-- espumas
-- cavitario
+{", ".join(material_categorias)}
 
 Material: {novo_material}
 
@@ -410,6 +436,7 @@ Responde apenas com a categoria.
 
             if categoria in st.session_state.materiais_extra:
                 st.session_state.materiais_extra[categoria].append(novo_material)
+                save_materiais(st.session_state.materiais_extra)
                 st.success(f"{novo_material} → {categoria}")
             else:
                 st.warning("Categoria não reconhecida")
