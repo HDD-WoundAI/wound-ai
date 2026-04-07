@@ -658,112 +658,150 @@ if st.button("🧠 Gerar Plano"):
     st.markdown("## 🥇 Plano de Tratamento")
 
     # ========================
-    # 🤖 IA (PLANO PRINCIPAL)
-    # ========================
-    imagem_base64 = None
+# 🤖 IA (PLANO PRINCIPAL)
+# ========================
+imagem_base64 = None
 
-    if imagem:
-        imagem_base64 = base64.b64encode(bytes_data).decode("utf-8")
+if imagem:
+    imagem_base64 = base64.b64encode(bytes_data).decode("utf-8")
 
-    stock = []
+# ========================
+# 📦 STOCK COMPLETO (BASE + EXTRA)
+# ========================
+stock = []
 
-    if st.session_state["polymem"]: stock.append("Polymem")
-    if st.session_state["mepilex"]: stock.append("Mepilex")
-    if st.session_state["mepilex_ag"]: stock.append("Mepilex AG")
-    if st.session_state["urgoclean"]: stock.append("Urgoclean")
-    if st.session_state["urgoclean_ag"]: stock.append("Urgoclean AG")
-    if st.session_state["mel"]: stock.append("Mel")
-    if st.session_state["cronocol"]: stock.append("Cronocol")
-    contexto = ""
+# 🔹 materiais base
+for k in stock_keys:
+    if st.session_state.get(k):
+        stock.append(k)
 
-    if override:
-        contexto += f"""
+# 🔹 materiais extra
+for categoria, materiais in st.session_state.materiais_extra.items():
+    for mat in materiais:
+        key = f"extra_{categoria}_{mat}"
+        if st.session_state.get(key):
+            stock.append(mat)
+
+# ========================
+# 🧠 CONTEXTO CLÍNICO
+# ========================
+contexto = ""
+
+if override:
+    contexto += f"""
 Tecido: {tecido}
 Exsudado: {exsudado}
 Infeção: {infeccao}
 Fístula: {fistula}
 Vascular: {vascular}
 """
-        if iptb:
-            contexto += f"\nIPTB: {iptb:.2f}"
 
-    prompt = f"""
-Define plano de tratamento para pé diabético.
+    if iptb:
+        contexto += f"\nIPTB: {iptb:.2f}"
+
+        if iptb < 0.5:
+            contexto += "\nATENÇÃO: isquemia crítica"
+
+# ========================
+# 🧠 PROMPT MELHORADO
+# ========================
+prompt = f"""
+És especialista em tratamento de pé diabético.
+
+Define um plano de tratamento baseado APENAS no material disponível.
 
 Material disponível:
 {", ".join(stock)}
 
+Dados clínicos:
 {contexto}
 
-Inclui:
-- plano principal
-- alternativas
-- notas clínicas
+Regras:
+- NÃO usar materiais fora da lista
+- Priorizar controlo de infeção
+- Adaptar ao nível de exsudado
+- Considerar risco vascular (IPTB)
+- Evitar terapias agressivas em isquemia crítica
+
+Resposta estruturada:
+
+1. Plano principal
+2. Alternativas
+3. Justificação clínica curta
+4. Alertas importantes
 """
 
-    try:
-        if imagem_base64:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{imagem_base64}"}},
-                        ],
-                    }
-                ],
-            )
-        else:
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[{"role": "user", "content": prompt}],
-            )
+# ========================
+# 🚀 CHAMADA À IA
+# ========================
+try:
+    if imagem_base64:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{imagem_base64}"
+                            },
+                        },
+                    ],
+                }
+            ],
+        )
+    else:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[{"role": "user", "content": prompt}],
+        )
 
-        resultado = response.choices[0].message.content
+    resultado = response.choices[0].message.content
 
-        st.write(resultado)
+    st.write(resultado)
 
-    except:
-        st.error("Erro IA")
+except:
+    st.error("Erro IA")
 
-    # ========================
-    # ⚙️ AJUSTES CLÍNICOS TEUS
-    # ========================
-    st.markdown("## ⚙️ Ajustes clínicos automáticos")
+# ========================
+# ⚙️ AJUSTES CLÍNICOS TEUS (MANTIDOS)
+# ========================
+st.markdown("## ⚙️ Ajustes clínicos automáticos")
 
-    plano = []
+plano = []
 
-    if override:
+if override:
 
-        if exsudado == "alto" and not vascular:
-            plano.append("Considerar TPN (100 mmHg)")
+    if exsudado == "alto" and not vascular:
+        plano.append("Considerar TPN (100 mmHg)")
 
-        if infeccao == "sim":
-            plano.append("Garantir cobertura antimicrobiana")
+    if infeccao == "sim":
+        plano.append("Garantir cobertura antimicrobiana")
 
-        if fistula and cronocol:
-            plano.append("Preencher cavidade com Cronocol")
+    if fistula and st.session_state.get("cronocol"):
+        plano.append("Preencher cavidade com Cronocol")
 
-        if urgoclean and tecido == "fibrina":
-            plano.append("Urgoclean + hidrogel (potenciar desbridamento)")
+    if st.session_state.get("urgoclean") and tecido == "fibrina":
+        plano.append("Urgoclean + hidrogel (potenciar desbridamento)")
 
-    for p in plano:
-        st.write(f"• {p}")
+for p in plano:
+    st.write(f"• {p}")
 
-    # ========================
-    # ⚠️ ALERTAS (MANTIDOS)
-    # ========================
-    st.markdown("## ⚠️ Alertas")
+# ========================
+# ⚠️ ALERTAS (MANTIDOS)
+# ========================
+st.markdown("## ⚠️ Alertas")
 
-    if override and iptb and iptb < 0.5:
-        st.error("Isquemia crítica")
+if override and iptb and iptb < 0.5:
+    st.error("Isquemia crítica")
 
-    if override and exsudado == "alto":
-        st.warning("Risco de maceração")
+if override and exsudado == "alto":
+    st.warning("Risco de maceração")
 
-    st.warning("Confirmar descarga")
+st.warning("Confirmar descarga")
 # ========================
 # GUARDAR
 # ========================
