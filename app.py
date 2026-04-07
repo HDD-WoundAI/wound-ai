@@ -205,6 +205,11 @@ with st.sidebar.expander("🧼 Limpeza"):
     st.checkbox("Granudacyn", key="granudacyn")
     st.checkbox("Betadine", key="betadine")
 
+    for mat in st.session_state.materiais_extra["limpeza"]:
+        key = f"extra_limpeza_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
 
 # ========================
 # 🧽 DESBRIDAMENTO
@@ -214,6 +219,12 @@ with st.sidebar.expander("🧽 Desbridamento"):
     st.checkbox("Urgoclean AG", key="urgoclean_ag")
     st.checkbox("Flaminal", key="flaminal")
     st.checkbox("Ulcerase", key="ulcerase")
+
+    for mat in st.session_state.materiais_extra["desbridamento"]:
+        key = f"extra_desbridamento_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
 
 
 # ========================
@@ -225,6 +236,12 @@ with st.sidebar.expander("🦠 Antimicrobianos"):
     st.checkbox("Iodosorb", key="iodosorb")
     st.checkbox("Silverderma", key="silverderma")
 
+    for mat in st.session_state.materiais_extra["antimicrobianos"]:
+        key = f"extra_antimicrobianos_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
 
 # ========================
 # 🧸 ESPUMAS
@@ -234,12 +251,24 @@ with st.sidebar.expander("🧸 Espumas"):
     st.checkbox("Mepilex", key="mepilex")
     st.checkbox("Mepilex AG", key="mepilex_ag")
 
+    for mat in st.session_state.materiais_extra["espumas"]:
+        key = f"extra_espumas_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
+
 
 # ========================
 # 🕳️ CAVITÁRIO
 # ========================
 with st.sidebar.expander("🕳️ Material cavitário"):
     st.checkbox("Cronocol", key="cronocol")
+
+    for mat in st.session_state.materiais_extra["cavitario"]:
+        key = f"extra_cavitario_{mat}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        st.checkbox(mat, key=key)
 
 st.sidebar.markdown("### 🏥 Perfis de stock")
 
