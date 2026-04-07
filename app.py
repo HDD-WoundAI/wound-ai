@@ -716,12 +716,30 @@ Material disponível:
 Dados clínicos:
 {contexto}
 
-Regras:
+Regras clínicas obrigatórias:
+
 - NÃO usar materiais fora da lista
 - Priorizar controlo de infeção
 - Adaptar ao nível de exsudado
 - Considerar risco vascular (IPTB)
 - Evitar terapias agressivas em isquemia crítica
+
+Regras específicas de materiais:
+
+- Espumas de poliuretano (ex: Allevyn, Mepilex, Polymem) são primeira linha para controlo de exsudado
+- Em exsudado muito elevado considerar TPN, se não houver contraindicações
+
+- Ulcerase deve ser trocado diariamente (ao contrário da maioria dos pensos)
+
+- Em presença de tecido inviável (fibrina, necrose):
+    → considerar desbridamento mecânico
+    → evitar desbridamento agressivo se houver compromisso vascular significativo
+
+- Polymem:
+    → pode aumentar exsudado nos primeiros dias
+    → pode saturar rapidamente
+    → considerar penso secundário absorvente
+    → NÃO combinar com pomadas (ex: flaminal, mel), pois reduz eficácia
 
 Resposta estruturada:
 
