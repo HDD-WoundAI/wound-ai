@@ -94,6 +94,12 @@ if "stock" not in st.session_state:
 st.sidebar.title("📦 Stock disponível")
 
 # ========================
+# UI
+# ========================
+st.title("👣 Assistente Pé Diabético")
+
+
+# ========================
 # KEYS DE STOCK
 # ========================
 stock_keys = [
