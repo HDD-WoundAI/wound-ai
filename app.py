@@ -218,13 +218,15 @@ for k in stock_keys:
 # 📦 MATERIAIS EXTRA (NOVO)
 # ========================
 if "materiais_extra" not in st.session_state:
-    st.session_state.materiais_extra = {
-        "limpeza": [],
-        "desbridamento": [],
-        "antimicrobianos": [],
-        "espumas": [],
-        "cavitario": []
-    }
+
+    saved = load_materiais()
+
+    if saved:
+        st.session_state.materiais_extra = saved
+    else:
+        st.session_state.materiais_extra = {
+            cat: [] for cat in material_categorias
+        }
 # ========================
 # APLICAR PERFIL
 # ========================
